@@ -1,0 +1,113 @@
+thead td {
+	font-weight: bold;
+}
+
+#wrap > .container {
+	margin-top: 60px;
+}
+
+.right{
+	float: right;
+}
+
+.left{
+	float: left;
+}
+
+.comment{
+	padding: 20px 60px 20px 60px;
+	margin-bottom: 30px;
+	color: inherit;
+	background-color: #EEE;
+	border-radius: 10px;
+}
+
+.comment > p{
+	font-size: 21px;
+	margin-top: -10px;
+}
+
+.clear{
+	clear: both;
+}
+
+.back{
+	margin: 20px auto 20px auto;
+}
+
+.img{
+	display: inline;
+}
+
+.img > img{
+	margin-left: auto;
+	margin-right: auto;
+	height: 300px;
+	padding: 20px;
+	background-color: #EEE;
+}
+
+.history{
+	margin-top: 20px;
+}
+
+.response{
+	text-align: center;
+	height: 35px;
+}
+
+.finish{
+	text-align: center;
+	height: 55px;
+	margin-top: 20px;
+}
+
+.finish  a {
+	text-align: center;
+	width: 50%;
+}
+
+.footer{
+	padding: 20px;
+}
+
+.dispnone{
+	display: none;
+}
+
+.expand{
+	margin-left: -3%;
+}
+
+.login > img{
+	height: 30px;
+}
+
+.setting{
+	position: absolute;
+	right: 5%;
+	display: table;
+	z-index: 1;
+}
+
+.setting > img{
+	display: block;
+	height: auto;
+	width: 40%;
+	float: right;
+	cursor: pointer;
+}
+
+.settings{
+	margin-top: 30%;
+	position: absolute;
+	z-index: 999;
+}
+
+div.form-group{
+	margin-top: -5%;
+}
+
+.jumbotron{
+	background-color: #CCC;
+}
