@@ -6,7 +6,7 @@
 	
 	<?php
 		echo $this->Html->css(array('cake.generic.css','bootstrap.min.css', 'styles.css', 'sticky-footer.css'));
-		echo $this->Html->script(array('jquery-2.1.3.min.js', 'canvasjs.js'));
+		echo $this->Html->script(array('jquery-2.1.3.min.js','bootstrap.min.js', 'canvasjs.js'));
 	?>
 
 

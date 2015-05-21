@@ -1,5 +1,6 @@
 <?php
-	$userid = $this->params['pass'][0];
+	$userid = $this->Auth->user()['social_network_id'];
+	$usernm = $this->Auth->user()['email'];
 	$i = 1;
 	foreach ($datas as $data) {
 	?>
@@ -27,21 +28,21 @@
 
 		echo "<div class='col-xs-4'>";
 		echo $this->Form->postLink('Positif', 
-			array('action'=>'labeling', $userid, $data['KomentarStatus']['id_komentar'], $data['KomentarStatus']['id_status']),
+			array('action'=>'labeling', $userid, $usernm, $data['KomentarStatus']['id_komentar'], $data['KomentarStatus']['id_status'], 'positif'),
 			array('class'=> 'btn btn-primary auto')
 		);
 		echo "</div>";
 		
 		echo "<div class='col-xs-4'>";
 		echo $this->Form->postLink('Netral', 
-			array('action'=>'labeling', $userid, $data['KomentarStatus']['id_komentar'], $data['KomentarStatus']['id_status']),
+			array('action'=>'labeling', $userid, $usernm, $data['KomentarStatus']['id_komentar'], $data['KomentarStatus']['id_status'], 'netral'),
 			array('class'=> 'btn btn-warning auto')
 		);
 		echo "</div>";
 		
 		echo "<div class='col-xs-4'>";
 		echo $this->Form->postLink('Negatif', 
-			array('action'=>'labeling', $userid, $data['KomentarStatus']['id_komentar'], $data['KomentarStatus']['id_status']),
+			array('action'=>'labeling', $userid, $usernm, $data['KomentarStatus']['id_komentar'], $data['KomentarStatus']['id_status'], 'negatif'),
 			array('class'=> 'btn btn-danger auto')
 		);
 		echo "</div>";

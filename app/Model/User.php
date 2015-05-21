@@ -1,28 +1,7 @@
 <?php
+App::uses('AuthComponent', 'Controller/Component');
 class User extends AppModel {
-    public $primaryKey = 'username';
-
-    public $validate = array(
-        'username' => array(
-            'required' => array(
-                'rule' => array('notEmpty'),
-                'message' => 'A username is required'
-            )
-        ),
-        'password' => array(
-            'required' => array(
-                'rule' => array('notEmpty'),
-                'message' => 'A password is required'
-            )
-        ),
-        'role' => array(
-            'valid' => array(
-                'rule' => array('inList', array('admin', 'author')),
-                'message' => 'Please enter a valid role',
-                'allowEmpty' => false
-            )
-        )
-    );
+    public $primaryKey = 'email';
 
     public $hasMany = array(
         'TabelLabel' => array(
@@ -30,4 +9,15 @@ class User extends AppModel {
             'foreignKey'=> 'username_pelabel'
         )
     );
+
+    /**
+     * Before Save
+     * @param array $options
+     * @return boolean
+     */
+     public function beforeSave($options = array()) {
+     
+        // fallback to our parent
+        return parent::beforeSave($options);
+    }
 }

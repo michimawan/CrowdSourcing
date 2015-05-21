@@ -9,6 +9,9 @@ class StatusesController extends AppController {
 
 	// admin only
 	public function index() {
+		if($this->Auth->user()['role']=='user')
+			$this->redirect(array('controller' => 'Users', 'action' => 'user'));
+
 		$this->set('title','Daftar Status Facebook');
 		
 		/*
@@ -32,6 +35,9 @@ class StatusesController extends AppController {
 
 	// admin only
 	public function view($id = null){
+		if($this->Auth->user()['role']=='user')
+			$this->redirect(array('controller' => 'Users', 'action' => 'user'));
+
 		if($id){
 			$this->set('title','Status Facebook');
 			/*
@@ -97,7 +103,7 @@ class StatusesController extends AppController {
 		
 	}
 
-	public function randomkomentar($id){
+	private function randomkomentar($id){
 		//baca maksimum label per komentar
 		$file = new File(WWW_ROOT .  DS .'files'.DS .'setting.txt');
 		$json = $file->read(true, 'r');
@@ -106,12 +112,12 @@ class StatusesController extends AppController {
 
 		//ambil username user
 		$users = $this->KomentarStatus->TabelLabel->User->find('first', 
-			array('conditions' => array('User.id' => $id),
-				'fields' => array('User.username'),
+			array('conditions' => array('User.social_network_id' => $id),
+				'fields' => array('User.email'),
 				'recursive' => -1
 			)
 		);
-		$users = $users['User']['username'];
+		$users = $users['User']['email'];
 		//$this->set(compact('users'));
 
 		//ambil daftar komentar yang sudah dilabeli user terkait dari tabel label
@@ -150,26 +156,24 @@ class StatusesController extends AppController {
 		return $datas;
 	}
 
-	public function labeling($id = null){
+	public function labeling($id = null, $user = null, $id_komen = null, $id_status = null, $label = null){
+		if($this->Auth->user()['role']=='admin')
+			$this->redirect(array('controller' => 'Users', 'action' => 'index'));
+
+		$id = $this->Auth->user()['social_network_id'];
+
 		if($this->request->is('post')) {
-			/*
-			$this->log('Got here', 'debug');
-			$dd = $this->request->data;
-			//random lagi
-			$this->set(compact('dd'));
-			//$data = array('nama_label' => $id_label);
-			//$this->KomentarStatus->TabelLabel->id = $id_komentar;
-			//$this->KomentarStatus->TabelLabel->save($data);
-			
-			$this->set('title','Daftar Komentar Facebook');
-			$datas = $this->KomentarStatus->find(
-				'all', array('conditions' => array(
-					'KomentarStatus.id_komentar' => '10152085258656179_10152085259916179'),
-					'recursive'=> 0
-				)
-			);
-			*/
-			$this->set(compact('datas'));
+			$data['TabelLabel']['id_status'] = $id_status;
+			$data['TabelLabel']['id_komen'] = $id_komen;
+			$data['TabelLabel']['username_pelabel'] = $user;
+			$data['TabelLabel']['nama_label'] = $label;
+
+			$this->KomentarStatus->TabelLabel->save($data);
+
+			App::import('Controller', 'Users');
+	    	$UsersController = new UsersController;
+			$UsersController->incrementLabel($id);
+
 			$this->redirect(array('action' => 'labeling', $id));
 		} else if ($id) {
 			$datas = $this->randomkomentar($id);
@@ -177,7 +181,13 @@ class StatusesController extends AppController {
 		}
 	}
 
+	
+
+
 	public function edit($id_komentar = null, $id_label = null){
+		if($this->Auth->user()['role']=='admin')
+			$this->redirect(array('controller' => 'Users', 'action' => 'index'));
+
 		$this->set('title', 'Edit Label Komentar');
 
 		if($this->request->is('post')){

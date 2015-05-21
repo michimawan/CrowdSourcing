@@ -16,9 +16,9 @@
 			},
 		    animationEnabled: true,
 			legend:{
-				verticalAlign: "center",
-				horizontalAlign: "left",
-				fontSize: 20,
+				verticalAlign: "bottom",
+				horizontalAlign: "center",
+				fontSize: 15,
 				fontFamily: "Helvetica"        
 			},
 			theme: "theme2",
@@ -27,9 +27,13 @@
 				type: "pie",       
 				indexLabelFontFamily: "Garamond",       
 				indexLabelFontSize: 20,
-				indexLabel: "{label} {y}%",
+				indexLabelFontWeight: "bold",
+				indexLabelFontColor: "MistyRose",       
+				indexLabelLineColor: "darkgrey", 
+				indexLabelPlacement: "inside",
+				indexLabel: "{y}%",
 				startAngle:-20,      
-				showInLegend: false,
+				showInLegend: true,
 				toolTipContent:"{legendText} {y}%",
 				dataPoints: [
 					{  y: data[0], legendText:"Belum", label: "Belum" },

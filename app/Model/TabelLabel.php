@@ -8,7 +8,7 @@ class TabelLabel extends AppModel {
 	);
 	
 	public $hasOne = array(
-		'User' => array('foreignKey'=>'username')
+		'User' => array('foreignKey'=>'email')
 	);
 }
 ?>

@@ -99,6 +99,7 @@ thead td {
 }
 
 .settings{
+	background-color: white;
 	margin-top: 30%;
 	position: absolute;
 	z-index: 999;
@@ -110,4 +111,17 @@ div.form-group{
 
 .jumbotron{
 	background-color: #CCC;
+}
+
+.pagingnumber{
+	color: black;
+}
+
+.navbar-right li img{
+	width: 200px;
+}
+
+#navbar-login a < img{ 
+	padding-top: 5px;
+	padding-bottom: 5px;
 }
