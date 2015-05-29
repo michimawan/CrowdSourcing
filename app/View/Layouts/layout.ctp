@@ -20,6 +20,7 @@
 
 		<div class="container">
 			<?php
+			echo $this->Session->Flash();
 			echo $this->fetch('content');
 			?>
 		</div>

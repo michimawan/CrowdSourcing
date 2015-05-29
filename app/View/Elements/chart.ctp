@@ -24,7 +24,7 @@
 			data: [
 			{        
 				type: "pie",       
-				indexLabelFontFamily: "Garamond",       
+				indexLabelFontFamily: "Helvetica",       
 				indexLabelFontSize: 20,
 				indexLabel: "{label} {y}%",
 				startAngle:-20,      

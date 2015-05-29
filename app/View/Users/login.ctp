@@ -2,8 +2,9 @@
 	
 	$banyaklabel = $json->n;
 	$total = $comments*$banyaklabel;
+	$belum = $total-$labels;
 	$labels = $labels/$total * 100;
-	$belum = ($total-$labels) / $total *100;
+	$belum = $belum / $total *100;
 ?>
 <div class='hidden' id='data' attribute="<?php echo $labels.'-'.$belum ?>"></div>
 <div>

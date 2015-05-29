@@ -12,6 +12,8 @@ $('.submit').click(function(){
 		$.ajax({
 			dataType:"html",
 			success: function(result){
+				var results = result.split(" ");
+
 				$('.payment').each(function(i, obj) {
 				    var now = $(this).html();
 				    var priceold = $(this).attr('prices');
@@ -24,11 +26,18 @@ $('.submit').click(function(){
 				$('.settings').slideToggle();
 
 				var data = $("#dataPoint").attr('attribute');
-				var datas = setdatapoint(data, labels);
+				if(result.length > 0){
+					var datas = setdatapoint(data, results[1]);
+					$('#labelperkomen').val(results[1]);
+				}
+				else
+					var datas = setdatapoint(data, labels);
 				
 				draw(datas);
-
-				alert('setting sudah diupdate');
+				if(result.length > 0)
+					alert('jumlah label tidak diupdate');
+				else
+					alert('setting sudah diupdate');
 		    },
 		    type:"get",
 	        url:'<?php echo $this->Html->url(array('action'=>'changesetting')); ?>/' +  combine

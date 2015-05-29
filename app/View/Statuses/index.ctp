@@ -28,7 +28,7 @@
 	if(isset($this->params->query['limit']))
 		$limit = $this->params->query['limit'];
 	else $limit = 5;
-	$options = array(1=>'1', 5 => '5', 10 => '10', 25 => '25', 50 => '50', 100 => '100');
+	$options = array(5 => '5', 10 => '10', 25 => '25', 50 => '50', 100 => '100');
 	echo $this->Form->create(array('type' => 'get', 'class' => 'pagingnumber'));
 	echo $this->Form->select('limit', $options, array(
 		'value' => $limit,

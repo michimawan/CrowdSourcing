@@ -25,7 +25,7 @@
 			data: [
 			{        
 				type: "pie",       
-				indexLabelFontFamily: "Garamond",       
+				indexLabelFontFamily: "Helvetica",       
 				indexLabelFontSize: 20,
 				indexLabelFontWeight: "bold",
 				indexLabelFontColor: "MistyRose",       
@@ -36,8 +36,9 @@
 				showInLegend: true,
 				toolTipContent:"{legendText} {y}%",
 				dataPoints: [
-					{  y: data[0], legendText:"Belum", label: "Belum" },
-					{  y: data[1], legendText:"Terlabeli", label: "Terlabeli" }
+					{  y: data[0], legendText:"Terlabeli", label: "Terlabeli" },
+					{  y: data[1], legendText:"Belum", label: "Belum" }
+					
 				]
 			}
 			]

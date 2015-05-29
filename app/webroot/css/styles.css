@@ -42,8 +42,7 @@ thead td {
 .img > img{
 	margin-left: auto;
 	margin-right: auto;
-	height: 300px;
-	padding: 20px;
+	padding: 5%;
 	background-color: #EEE;
 }
 
@@ -121,7 +120,18 @@ div.form-group{
 	width: 200px;
 }
 
-#navbar-login a < img{ 
-	padding-top: 5px;
-	padding-bottom: 5px;
+.positip, .netrals, .negatip{
+	background-color: white;
+}
+
+.positip > p, .netral > p, .negatip > p{
+	font-size: 12pt;
+}
+
+.navbar-nav > li > a(:not(span)){
+	padding-top: 0px;
+}
+
+.panel.panel-default.xs3{
+	width: 30%;
 }

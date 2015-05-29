@@ -95,9 +95,47 @@ class UsersController extends AppController {
 
 			$this->set(compact("datas"));
 
+			//hitung total komentar
+			$komentars = $this->User->TabelLabel->KomentarStatus->find('count');
+
+			//lihat user sudah melabeli berapa komentar
+			$labelsekarang = $this->User->TabelLabel->KomentarStatus->countusers($id);
+			//buat permissionnya
+			$tambahlabel = false;
+			if($labelsekarang[0][0]['jumlah'] == $komentars)
+				$tambahlabel = true;
+			
+			$this->set(compact('tambahlabel'));
+
+			$canlabel = $this->canLabel();
+			$this->set(compact('canlabel'));
 		}
 		
 	}
+
+	private function getN(){
+		//baca maksimum label per komentar
+		
+		$file = new File(WWW_ROOT .  DS .'files'.DS .'setting.txt');
+		$json = $file->read(true, 'r');
+		$json = json_decode($json);
+		return $json->n;
+	}
+
+	private function canLabel(){
+
+		$maxlabel = $this->getN();
+		/*
+		$datas = $this->KomentarStatus->getrandom($this->Auth->user()['email'], $maxlabel);
+		
+		*/
+		$komentarlabel = $this->User->TabelLabel->KomentarStatus->getrandom($this->Auth->user()['email'], $maxlabel);
+		if($komentarlabel)
+			return true;
+		else 
+			return false;
+	}
+
 
 	// admin only
 	public function view($id = null){
@@ -144,40 +182,40 @@ class UsersController extends AppController {
 	public function useroff($id = null) {
          
         if (!$id) {
-            $this->Session->setFlash('Please provide a user id');
+            $this->Session->setFlash('Please provide a user id', 'customflash', array('class' => 'warning'));
             $this->redirect(array('action'=>'index'));
         }
          
         $this->User->id = $id;
         if (!$this->User->exists()) {
-            $this->Session->setFlash('Invalid user id provided');
+            $this->Session->setFlash('Invalid user id provided', 'customflash', array('class' => 'warning'));
             $this->redirect(array('action'=>'index'));
         }
         if ($this->User->saveField('status', 0)) {
-            $this->Session->setFlash(__('User deleted'));
+            $this->Session->setFlash(__('User deleted'),'customflash', array('class' => 'danger'));
             $this->redirect(array('action' => 'index'));
         }
-        $this->Session->setFlash(__('User was not deleted'));
+        $this->Session->setFlash(__('User was not deleted'), 'customflash', array('class' => 'info'));
         $this->redirect(array('action' => 'index'));
     }
      
     public function activate($id = null) {
          
         if (!$id) {
-            $this->Session->setFlash('Please provide a user id');
+            $this->Session->setFlash('Please provide a user id', 'customflash', array('class' => 'warning'));
             $this->redirect(array('action'=>'index'));
         }
          
         $this->User->id = $id;
         if (!$this->User->exists()) {
-            $this->Session->setFlash('Invalid user id provided');
+            $this->Session->setFlash('Invalid user id provided', 'customflash', array('class' => 'warning'));
             $this->redirect(array('action'=>'index'));
         }
         if ($this->User->saveField('status', 1)) {
-            $this->Session->setFlash(__('User re-activated'));
+            $this->Session->setFlash(__('User re-activated'),'customflash', array('class' => 'success'));
             $this->redirect(array('action' => 'index'));
         }
-        $this->Session->setFlash(__('User was not re-activated'));
+        $this->Session->setFlash(__('User was not re-activated'),'customflash', array('class' => 'info'));
         $this->redirect(array('action' => 'index'));
     }
 	/*
@@ -207,8 +245,22 @@ class UsersController extends AppController {
 			$data = split(" ", $data);
 			$datas['price'] = $data[0];
 			$datas['n'] = $data[1];
+
+			$exists = $this->User->TabelLabel->KomentarStatus->ceksetting($data[1]);
+			if($exists){
+				$datas['n'] = $this->getN();
+				$this->User->TabelLabel->KomentarStatus->updatestatus('lengkap', $this->getN());
+				echo "no ".$datas['n'];
+			} else {
+				if($this->getN() == $data[0])
+					$this->User->TabelLabel->KomentarStatus->updatestatus('lengkap', $this->getN());
+				else
+				$this->User->TabelLabel->KomentarStatus->updatestatus('belum', $this->getN());
+			}
+				
+
 			$json = json_encode($datas);
-			
+
 			$file = new File(WWW_ROOT .  DS .'files'.DS .'setting.txt', true);
 			$file->write($json);
 		}
@@ -295,9 +347,9 @@ class UsersController extends AppController {
 		
 		// #0 - if not @gmail.com login error
 		list($user, $domain) = explode('@', $incomingProfile['User']['email']);
-
+		
 		if ($domain != 'gmail.com') {
-			$this->Session->setFlash('Must use @ti.ukdw.ac.id domain for using this app');
+			$this->Session->setFlash('Must use @ti.ukdw.ac.id domain for using this app', 'customflash', array('class' => 'danger'));
 			$this->redirect(array('action' => 'login'));
 		    //$this->redirect($this->Auth->loginError);
 		}
@@ -308,12 +360,6 @@ class UsersController extends AppController {
 			'conditions' => array('social_network_id' => $incomingProfile['User']['social_network_id'])
 		));
 		
-		//#1.1 - check if status is-not-active, can't login
-		if($existingProfile['User']['status'] == 0){
-			$this->redirect(array('action' => 'login'));
-		}
-
-		//debug($existingProfile);
 		if ($existingProfile) {
 			// #2 - if an existing profile is available, then we set the user as connected and log them in
 			
@@ -321,10 +367,15 @@ class UsersController extends AppController {
 				'conditions' => array('social_network_id' => $existingProfile['User']['social_network_id'])
 			));
 			
-			//debug($user);
+
+			//#2.1 - check if status is-not-active, can't login
+			if($existingProfile['User']['status'] == 0){
+				$this->Session->setFlash(__('Maaf, akun anda sudah di non-aktifkan'), 'customflash', array('class' => 'danger'));
+				$this->redirect(array('action' => 'login'));
+			}
+
 			$this->_doSocialLogin($user,true);
 		} else {
-			
 			// New profile.
 			if ($this->Auth->loggedIn()) {
 				// user is already logged-in , attach profile to logged in user.
@@ -340,6 +391,7 @@ class UsersController extends AppController {
 				// log in with the newly created user
 				$this->_doSocialLogin($incomingProfile);
 			}
+			
 		}	
 	}
 	
@@ -348,22 +400,14 @@ class UsersController extends AppController {
 		if ($this->Auth->login($user['User'])) {
 			if($returning){
 				
-				$this->Session->setFlash(__('Welcome back, '. $this->Auth->user('display_name')));
+				$this->Session->setFlash(__('Welcome back, '. $this->Auth->user('display_name')), 'customflash', array('class' => 'info'));
 			} else {
 
-				$this->Session->setFlash(__('Welcome to our community, '. $this->Auth->user('display_name')));
+				$this->Session->setFlash(__('Welcome to our community, '. $this->Auth->user('display_name')), 'customflash', array('class' => 'info'));
 			}
-			$this->redirect($this->Auth->loginRedirect);
-
-			/*
-			if($user['User']['role'] == 'admin')
-				$this->redirect($this->Auth->adminRedirect);
-			else if($user['User']['role'] == 'user')
-				$this->redirect($this->Auth->userRedirect);
-			*/
-			
+			$this->redirect($this->Auth->loginRedirect);			
 		} else {
-			$this->Session->setFlash(__('Unknown Error could not verify the user: '. $this->Auth->user('display_name')));
+			$this->Session->setFlash(__('Unknown Error could not verify the user: '. $this->Auth->user('display_name')), 'customflash', array('class' => 'danger'));
 		}
 	}
 }

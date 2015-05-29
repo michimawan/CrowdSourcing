@@ -9,15 +9,4 @@ class User extends AppModel {
             'foreignKey'=> 'username_pelabel'
         )
     );
-
-    /**
-     * Before Save
-     * @param array $options
-     * @return boolean
-     */
-     public function beforeSave($options = array()) {
-     
-        // fallback to our parent
-        return parent::beforeSave($options);
-    }
 }

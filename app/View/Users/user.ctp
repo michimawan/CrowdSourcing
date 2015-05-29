@@ -7,6 +7,7 @@
 		<h1>Selamat datang, <?php echo $this->Auth->user()['display_name']; ?></h1>
 		<h3>Total Labeling: <?php echo $users[0]['User']['total_label'];?></h3>
 		<?php
+		if($tambahlabel == false && $canlabel == true)
 		echo $this->Html->link('beri label',
 			array('controller' => 'Statuses', 'action'=>'labeling', $this->Auth->user()['social_network_id']),
 			array('class' => 'btn btn-primary')
@@ -73,7 +74,7 @@
 	if(isset($this->params->query['limit']))
 		$limit = $this->params->query['limit'];
 	else $limit = 5;
-	$options = array(1=>'1', 5 => '5', 10 => '10', 25 => '25', 50 => '50', 100 => '100');
+	$options = array(5 => '5', 10 => '10', 25 => '25', 50 => '50', 100 => '100');
 	echo $this->Form->create(array('type' => 'get', 'class' => 'pagingnumber'));
 	echo $this->Form->select('limit', $options, array(
 		'value' => $limit,
