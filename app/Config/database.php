@@ -70,7 +70,7 @@ class DATABASE_CONFIG {
 		'host' => 'localhost',
 		'login' => 'root',
 		'password' => '',
-		'database' => 'a',
+		'database' => '',
 		'prefix' => '',
 		//'encoding' => 'utf8',
 	);
@@ -81,7 +81,7 @@ class DATABASE_CONFIG {
 		'host' => 'localhost',
 		'login' => 'root',
 		'password' => '',
-		'database' => 'a',
+		'database' => '',
 		'prefix' => '',
 		//'encoding' => 'utf8',
 	);

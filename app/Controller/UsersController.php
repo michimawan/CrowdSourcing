@@ -63,7 +63,7 @@ class UsersController extends AppController {
 		$json = $file->read(true, 'r');
 		$json = json_decode($json);
 		$this->set(compact('json'));
-		
+
 	}
 
 	// user only
@@ -246,16 +246,17 @@ class UsersController extends AppController {
 			$datas['price'] = $data[0];
 			$datas['n'] = $data[1];
 
-			$exists = $this->User->TabelLabel->KomentarStatus->ceksetting($data[1]);
-			if($exists){
-				$datas['n'] = $this->getN();
-				$this->User->TabelLabel->KomentarStatus->updatestatus('lengkap', $this->getN());
-				echo "no ".$datas['n'];
-			} else {
-				if($this->getN() == $data[0])
-					$this->User->TabelLabel->KomentarStatus->updatestatus('lengkap', $this->getN());
-				else
+			$maxnow = $this->User->TabelLabel->KomentarStatus->getMaxJmlLabel();
+		
+			if($maxnow[0][0]['maxi'] < $data[1]){
 				$this->User->TabelLabel->KomentarStatus->updatestatus('belum', $this->getN());
+			} else if($maxnow[0][0]['maxi'] == $data[1]){
+				
+				$datas['n'] = $maxnow[0][0]['maxi'];
+				$this->User->TabelLabel->KomentarStatus->updatestatus('lengkap', $maxnow[0][0]['maxi']);
+			} else{
+				$datas['n'] = $maxnow[0][0]['maxi'];
+				echo "no ".$datas['n'];
 			}
 				
 

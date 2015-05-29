@@ -41,8 +41,9 @@ class KomentarStatus extends AppModel {
 		return $this->query($q);
 	}
 
-	public function ceksetting($label){
-		$q = "SELECT * FROM `komentar_statuses` WHERE jml_label >= '$label'";
+	public function getMaxJmlLabel(){
+		$q = "SELECT MAX(jml_label) as maxi FROM komentar_statuses";
+		//$q = "SELECT * FROM `komentar_statuses` WHERE jml_label > '$label'";
 
 		return $this->query($q);
 	}
