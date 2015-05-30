@@ -88,17 +88,7 @@ CREATE TABLE IF NOT EXISTS `tabel_labels` (
   `waktu_melabel` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   `nama_label` varchar(50) DEFAULT NULL,
   PRIMARY KEY (`id_label`)
-) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=5 ;
-
---
--- Dumping data for table `tabel_labels`
---
-
-INSERT INTO `tabel_labels` (`id_label`, `id_status`, `id_komen`, `username_pelabel`, `waktu_melabel`, `nama_label`) VALUES
-(1, '23383061178_10152076252911179', '270924516448017_270930359780766', 'eternity.eternity.angel@gmail.com', '2015-05-27 05:22:32', 'positif'),
-(2, '23383061178_10152096383296179', '267046653502470_267048560168946', 'eternity.eternity.angel@gmail.com', '2015-05-27 05:03:40', 'positif'),
-(3, '23383061178_10152096383296179', '270924516448017_270928699780932', 'eternity.eternity.angel@gmail.com', '2015-05-27 05:03:43', 'negatif'),
-(4, '23383061178_10152096383296179', '270924516448017_270937739780028', 'eternity.eternity.angel@gmail.com', '2015-05-27 05:03:45', 'netral');
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
 
@@ -119,16 +109,11 @@ CREATE TABLE IF NOT EXISTS `users` (
   `role` varchar(64) DEFAULT NULL,
   `status` tinyint(1) NOT NULL DEFAULT '1',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=7 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
 
 --
 -- Dumping data for table `users`
 --
-
-INSERT INTO `users` (`id`, `social_network_id`, `email`, `display_name`, `link`, `picture`, `created`, `modified`, `total_label`, `role`, `status`) VALUES
-(1, '104583646065358950970', 'openpublick@gmail.com', 'Openopen ToPublic', 'https://profiles.google.com/104583646065358950970', 'https://lh3.googleusercontent.com/-xZNhvsi6BfE/AAAAAAAAAAI/AAAAAAAAAEA/9YOCjz9oDr0/photo.jpg', '2015-05-25 12:24:12', '2015-05-25 12:24:12', 0, 'admin', 1),
-(5, '104860961513772835214', 'blog.1393@gmail.com', 'Michael Himawan', 'https://profiles.google.com/104860961513772835214', 'https://lh3.googleusercontent.com/-XdUIqdMkCWA/AAAAAAAAAAI/AAAAAAAAAAA/4252rscbv5M/photo.jpg', '2015-05-26 01:24:39', '2015-05-26 01:24:39', 0, 'user', 1),
-(6, '113962260118921761990', 'eternity.eternity.angel@gmail.com', 'eternity angel', 'https://profiles.google.com/113962260118921761990', 'https://lh3.googleusercontent.com/-XdUIqdMkCWA/AAAAAAAAAAI/AAAAAAAAAAA/4252rscbv5M/photo.jpg', '2015-05-27 11:21:31', '2015-05-27 12:23:14', 4, 'user', 0);
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
