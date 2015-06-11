@@ -18,3 +18,5 @@ Project ini merupakan project yang digunakan untuk melakukan penilaian terhadap 
 6. untuk mencoba login sebagai admin, masuk ke phpmyadmin manual. Lalu ubah role sebagai admin
 
 7. server yang digunakan oleh developer dapat diunduh di [sini](http://sourceforge.net/projects/xampp/files/XAMPP%20Windows/1.8.3/)
+
+8. web ini dihosting di [sini](michimawan.koding.io), server akan running pada jam 18.00-19.00 
