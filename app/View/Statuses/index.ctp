@@ -12,6 +12,9 @@
 			array('action'=>'view', $data['Status']['id_status']),
 			array('class' => 'btn btn-info right')
 		);
+
+		echo $this->Html->link("Export Status (.csv)", array('controller' => 'statuses','action'=>'expStatus', $data['Status']['id_status']), array('class' => 'btn btn-primary left'));
+	
 		?>
 	</div>
 	

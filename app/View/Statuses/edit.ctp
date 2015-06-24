@@ -27,21 +27,21 @@
 		echo "<div class='col-xs-4'>";
 		echo $this->Form->postLink('Positif', 
 			array('action'=>'edit', $labels['TabelLabel']['id_label'], 'positif'),
-			array('class'=> 'btn btn-primary auto ')
+			array('class'=> 'btn btn-primary auto', 'confirm' => 'anda yakin dengan pilihan ini?')
 		);
 		echo "</div>";
 		
 		echo "<div class='col-xs-4'>";
 		echo $this->Form->postLink('Netral', 
 			array('action'=>'edit', $labels['TabelLabel']['id_label'], 'netral'),
-			array('class'=> 'btn btn-warning auto')
+			array('class'=> 'btn btn-warning auto', 'confirm' => 'anda yakin dengan pilihan ini?')
 		);
 		echo "</div>";
 		
 		echo "<div class='col-xs-4'>";
 		echo $this->Form->postLink('Negatif', 
 			array('action'=>'edit', $labels['TabelLabel']['id_label'], 'negatif'),
-			array('class'=> 'btn btn-danger auto')
+			array('class'=> 'btn btn-danger auto', 'confirm' => 'anda yakin dengan pilihan ini?')
 		);
 		echo "</div>";
 

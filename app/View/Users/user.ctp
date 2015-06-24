@@ -7,11 +7,21 @@
 		<h1>Selamat datang, <?php echo $this->Auth->user()['display_name']; ?></h1>
 		<h3>Total Labeling: <?php echo $users[0]['User']['total_label'];?></h3>
 		<?php
+		/*)
 		if($tambahlabel == false && $canlabel == true)
 		echo $this->Html->link('beri label',
 			array('controller' => 'Statuses', 'action'=>'labeling', $this->Auth->user()['social_network_id']),
 			array('class' => 'btn btn-primary')
-		);
+		);*/
+		if($tambahlabel == true)
+			echo "<h4>Anda sudah melabeli semua komentar yang disediakan !</h4>";
+		else if($canlabel == false)
+			echo "<h4>Tidak ada komentar yang bisa dilabeli lagi !</h4>";
+		else 
+			echo $this->Html->link('beri label',
+				array('controller' => 'Statuses', 'action'=>'labeling', $this->Auth->user()['social_network_id']),
+				array('class' => 'btn btn-primary')
+			);
 		?>
 	</div>
 	<div class='clear'></div>
@@ -47,6 +57,7 @@
 				<td><?php echo $labels['TabelLabel']['nama_label'] ?></td>
 				<td>
 					<?php 
+					if($lockstate == 'false')
 					echo $this->Html->link(
 						'edit',
 						array('controller' => 'Statuses', 'action' => 'edit', $labels['KomentarStatus']['id_komentar'], $labels['TabelLabel']['id_label']),

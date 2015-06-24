@@ -54,6 +54,20 @@
 		<h1>Selamat datang, <?php echo $admin[0]['User']['display_name']; ?></h1>
 		<h3>Data terlabel: <?php echo $sum; ?></h3>
 		<h3>Data belum terlabel: <?php echo $total-$sum; ?></h3>
+		<?php 
+		if(isset($lockstate)){
+			if($lockstate == 'false')
+				echo $this->Html->link("Non-aktifkan Pelabelan !", array('action'=>'setLock', 'true'), array('class' => 'btn btn-primary'));
+			else if($lockstate == 'true')
+				echo $this->Html->link("Aktifkan Pelabelan !", array('action'=>'setLock', 'false'), array('class' => 'btn btn-primary'));
+		
+		?>
+		<br><br>
+		<?php
+		echo $this->Html->link("Export Semua Komentar (.csv)", array('controller' => 'statuses','action'=>'expKomentar'), array('class' => 'btn btn-primary'));
+		}
+		?>
+
 	</div>
 	<div class='clear'></div>
 	<div id="chart" style="height: 400px; width: 100%;"></div>

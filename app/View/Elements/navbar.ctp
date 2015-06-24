@@ -50,21 +50,22 @@ else if ($menu === 'statuses') {
 				
 				<li id='navbar-login'>
 					<?php if($this->Auth->user()){?>
-					<a href="<?php echo $logouturl; ?>"><span>Logout</span></a>
+					<a href="<?php echo $logouturl; ?>" class='logout'><span>Logout</span></a>
 					<?php } else { 
-						/*
+						
 						echo $this->Html->link(
 							$this->Html->image("login-google.jpg", array("alt" => "Signin with Google")),
 						    array('action'=>'social_login', 'Google'),
-						    array("class" => "coco")
+						    array('escape' => false, "class" => "coco")
 						);
-						*/
 						
+						/*
 						echo $this->Html->image("login-google.jpg", array(
 						    "alt" => "Signin with Google",
-						    'url' => array('action'=>'social_login', 'Google')
+						    'url' => array('action'=>'social_login', 'Google'),
+						    'class'=> 'lala'
 						));
-						
+						*/
 					} ?>
 				</li>
 			</ul>

@@ -47,5 +47,13 @@ class AppController extends Controller {
 		//$this->Auth->authorize = 'Controller';
 	    $this->Auth->allow('social_login', 'login');
 	}
-	 
+	
+	function _setErrorLayout(){
+		if($this->name == 'CakeError')
+			$this->layout = 'error';
+	}
+
+	function beforeRender(){
+		$this->_setErrorLayout();
+	}
 }

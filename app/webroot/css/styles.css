@@ -128,10 +128,21 @@ div.form-group{
 	font-size: 12pt;
 }
 
-.navbar-nav > li > a(:not(span)){
-	padding-top: 0px;
+.navbar-nav > li > a.coco{
+	padding-top: 5px;
+	padding-bottom: 5px;
 }
 
 .panel.panel-default.xs3{
 	width: 30%;
+}
+
+.lengkap{
+	color: #3C763D;
+	background-color: #DFF0D8;
+	border-color: #D6E9C6;
+}
+
+.lengkap div div p{
+	color: black;
 }

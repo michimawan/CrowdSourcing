@@ -14,8 +14,12 @@
 	<h3>Komentar:</h3>
 		<?php
 		foreach ($komentars as $komen) {
+		if($komen['KomentarStatus']['status'] == 'lengkap'){
+			echo "<div class='comment lengkap'>";
+		} else {
+			echo "<div class='comment'>";
+		}
 		?>
-		<div class="comment">
 			<h5><?php echo $komen['KomentarStatus']['nama_pembuat']; ?></h5>
 			<p><?php echo $komen['KomentarStatus']['komentar']; ?></p>
 			<div class='clear'></div>
@@ -45,15 +49,22 @@
 						else 
 							$arrs['neg'] .= "<br>".$data['username_pelabel'];
 					} 
-				}				
+				}
+
 			?>
 			<div id="labels<?php echo $komen['KomentarStatus']['id_komentar'];?>" >
 				<ul class="nav nav-pills" role="tablist">
+				  	<li role="presentation"><a href="javascript:void(0)">Sudah dilabeli<span class="badge"><?php echo $komen['KomentarStatus']['jml_label']."x";?></span></a></li>
+				  	
+				  	<?php if($maxlabel - $komen['KomentarStatus']['jml_label'] > 0){ ?>
+				  	<li role="presentation"><a href="javascript:void(0)">kurang<span class="badge"><?php echo ($maxlabel - $komen['KomentarStatus']['jml_label'])."x";?></span></a></li>
+				  	<?php } ?>
+
 				  	<li role="presentation" attr="pos-<?php echo $komen['KomentarStatus']['id_komentar'];?>"><a href="javascript:void(0)">Positif<span class="badge"><?php echo $pos;?></span></a></li>
 				  	<li role="presentation" attr="net-<?php echo $komen['KomentarStatus']['id_komentar'];?>"><a href="javascript:void(0)">Netral<span class="badge"><?php echo $net;?></span></a></li>
 				  	<li role="presentation" attr="neg-<?php echo $komen['KomentarStatus']['id_komentar'];?>"><a href="javascript:void(0)">Negatif<span class="badge"><?php echo $neg;?></span></a></li>
-				  	<li role="presentation"><a href="javascript:void(0)">Belum Terlabeli<span class="badge"><?php echo ($maxlabel - $komen['KomentarStatus']['jml_label']);?></span></a></li>
-				  	<li role="presentation"><a href="javascript:void(0)">Sudah Terlabeli<span class="badge"><?php echo $komen['KomentarStatus']['jml_label'];?></span></a></li>
+				  	
+				  	
 				  	<li role="presentation"><a href="javascript:void(0)">Status:<span class="badge"><?php echo $komen['KomentarStatus']['status'];?></span></a></li>
 				</ul>
 

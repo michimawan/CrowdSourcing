@@ -3,11 +3,12 @@ App::uses('File', 'Utility');
 
 class UsersController extends AppController {
 	public $layout = "layout";
-	/*bisa overwrite juga koq*/
 	
 	public $uses = array('User', 'TabelLabel'); 
 	public $components = array('Hybridauth', 'Paginator');
-	// admin only
+	
+	// priviledge: admin
+	// method for viewing all user that uses this app and the setting configuration
 	public function index() {
 		$this->set('title','Daftar Pengguna Facebook Crowdsourcing');
 		/*
@@ -64,9 +65,24 @@ class UsersController extends AppController {
 		$json = json_decode($json);
 		$this->set(compact('json'));
 
+
+
+		//lock hanya muncul jika semua data sudah terlabeli
+		$lengkap = $this->User->TabelLabel->KomentarStatus->find('all', array(
+			'conditions' => array('KomentarStatus.status' => 'belum'),
+			'recursive' => -1
+			)
+		);
+		
+		if($lengkap);
+		else{
+			$lockstate = $this->getLock();
+			$this->set(compact('lockstate'));
+		}
 	}
 
-	// user only
+	// priviledge: user 
+	// method for user see their history for labeling a comment, and they can edit it if available
 	public function user($id = null){
 		$this->set('title', 'Facebook Crowdsourcing');
 
@@ -109,26 +125,60 @@ class UsersController extends AppController {
 
 			$canlabel = $this->canLabel();
 			$this->set(compact('canlabel'));
+			
+			$lockstate = $this->getLock();
+			$this->set(compact('lockstate'));
 		}
 		
 	}
 
+	// method for get lock state in configuration file
+	private function getLock(){
+		//baca maksimum label per komentar
+		$file = new File(WWW_ROOT .  DS .'files'.DS .'setting.txt');
+		$json = $file->read(true, 'r');
+		$json = json_decode($json);
+		return $json->lock;
+	}
+
+	// admin only
+	// method for set lock state 
+	public function setLock($value){
+		//baca maksimum label per komentar
+		$file = new File(WWW_ROOT .  DS .'files'.DS .'setting.txt');
+		$json = $file->read(true, 'r');
+		$json = json_decode($json);
+
+		$datas['price'] = $json->price;
+		$datas['n'] = $json->n;
+		$datas['lock'] = $value;
+		$json = json_encode($datas);
+
+		$file = new File(WWW_ROOT .  DS .'files'.DS .'setting.txt', true);
+		$file->write($json);
+
+		//saat di lock, maka update label akhir sebuah komentar
+		if($value == 'true')
+			$this->redirect(array('controller' => 'Statuses','action'=>'calculate'));
+		else 
+			$this->redirect(array('action'=>'index'));
+	}
+
+	// priviledge: user 
+	// method for get number of max label in configuration file
 	private function getN(){
 		//baca maksimum label per komentar
-		
 		$file = new File(WWW_ROOT .  DS .'files'.DS .'setting.txt');
 		$json = $file->read(true, 'r');
 		$json = json_decode($json);
 		return $json->n;
 	}
 
+	// method for check, is it still available to give a label
 	private function canLabel(){
 
 		$maxlabel = $this->getN();
-		/*
-		$datas = $this->KomentarStatus->getrandom($this->Auth->user()['email'], $maxlabel);
-		
-		*/
+
 		$komentarlabel = $this->User->TabelLabel->KomentarStatus->getrandom($this->Auth->user()['email'], $maxlabel);
 		if($komentarlabel)
 			return true;
@@ -137,7 +187,8 @@ class UsersController extends AppController {
 	}
 
 
-	// admin only
+	// priviledge: admin 
+	// method for view comments that have been labelled by a user 
 	public function view($id = null){
 		if($this->Auth->user()['role']=='user')
 			$this->redirect(array('action' => 'user'));
@@ -179,6 +230,9 @@ class UsersController extends AppController {
 			$this->redirect(array('action' => 'index'));
 		}
 	}
+
+	// priviledge: admin 
+	// method for deactivate a user
 	public function useroff($id = null) {
          
         if (!$id) {
@@ -192,13 +246,15 @@ class UsersController extends AppController {
             $this->redirect(array('action'=>'index'));
         }
         if ($this->User->saveField('status', 0)) {
-            $this->Session->setFlash(__('User deleted'),'customflash', array('class' => 'danger'));
+            $this->Session->setFlash(__('User telah dide-activate'),'customflash', array('class' => 'danger'));
             $this->redirect(array('action' => 'index'));
         }
         $this->Session->setFlash(__('User was not deleted'), 'customflash', array('class' => 'info'));
         $this->redirect(array('action' => 'index'));
     }
-     
+    
+    // priviledge: admin 
+	// method for reactivate a user
     public function activate($id = null) {
          
         if (!$id) {
@@ -212,27 +268,15 @@ class UsersController extends AppController {
             $this->redirect(array('action'=>'index'));
         }
         if ($this->User->saveField('status', 1)) {
-            $this->Session->setFlash(__('User re-activated'),'customflash', array('class' => 'success'));
+            $this->Session->setFlash(__('User telah dire-activated'),'customflash', array('class' => 'success'));
             $this->redirect(array('action' => 'index'));
         }
-        $this->Session->setFlash(__('User was not re-activated'),'customflash', array('class' => 'info'));
+        $this->Session->setFlash(__('User gagal dire-activated'),'customflash', array('class' => 'info'));
         $this->redirect(array('action' => 'index'));
     }
-	/*
-	// admin only
-	public function admin($id = null){
-		$this->set('title', 'Admin Facebook Crowdsourcing');
-
-		if($id){
-			$datas = $this->User->find(
-				'all', array('conditions' => array(
-					'User.id' => $id)
-				)
-			);
-			$this->set(compact('datas'));
-		} 
-	}
-	*/
+	
+	// priviledge: admin 
+	// method for admin to change configuration file
 	public function changesetting($data){
 		if($this->Auth->user()['role']=='user')
 			$this->redirect(array('action' => 'user'));
@@ -242,9 +286,11 @@ class UsersController extends AppController {
 
 		if($this->request->is('ajax'))
 		{
+			$lock = $this->getLock();
 			$data = split(" ", $data);
 			$datas['price'] = $data[0];
 			$datas['n'] = $data[1];
+			$datas['lock'] = $lock;
 
 			$maxnow = $this->User->TabelLabel->KomentarStatus->getMaxJmlLabel();
 		
@@ -272,6 +318,8 @@ class UsersController extends AppController {
 		
 	}
 
+	// priviledge: user 
+	// method for increment total_label that has been made by a user
 	public function incrementLabel($id) {
 		$this->User->updateAll(
 	        array('User.total_label' => 'User.total_label+1'),                    
@@ -279,14 +327,18 @@ class UsersController extends AppController {
     	);
 	}
 
-	//LOGIN SECTION
-	//credit to Mifty is bored (miftyisbored.com)
+	// LOGIN SECTION
+	// credit to Mifty is bored (miftyisbored.com)
+	
+	// method to filter allowed function before login is being made
 	public function beforeFilter() {
         parent::beforeFilter();
 
         $this->Auth->allow('login','social_login','social_endpoint');
     }
 
+    // priviledge: all
+	// method for provide login page 
 	public function login() {
         //if already logged-in, redirect
         if($this->Session->check('Auth.User')){
@@ -324,12 +376,16 @@ class UsersController extends AppController {
         }
         */
     }
- 
+ 	
+	// method for process logout
     public function logout() {
         $this->redirect($this->Auth->logout());
     }
 
     /* social login functionality */
+    // method to handle login from outside service
+    // if success, it will redirect to _successfulHybridauth
+    // else it will give error message
 	public function social_login($provider) {
 		if( $this->Hybridauth->connect($provider) ){
 			$this->_successfulHybridauth($provider,$this->Hybridauth->user_profile);
@@ -340,10 +396,14 @@ class UsersController extends AppController {
         }
 	}
 
+	// method that responsible for all interactions with the social network 
+	// and that it is the URL that the social network will call when it needs information from our appliactoin
 	public function social_endpoint($provider) {
 		$this->Hybridauth->processEndpoint();
 	}
 	
+	// method that complete the actual login process
+	// and also informs the CakePHP Auth component to let the user in
 	private function _successfulHybridauth($provider, $incomingProfile){
 		
 		// #0 - if not @gmail.com login error
@@ -396,19 +456,20 @@ class UsersController extends AppController {
 		}	
 	}
 	
+	// method that tells CakePHP’s Auth component that the user has been authenticated
 	private function _doSocialLogin($user, $returning = false) {
 
 		if ($this->Auth->login($user['User'])) {
 			if($returning){
 				
-				$this->Session->setFlash(__('Welcome back, '. $this->Auth->user('display_name')), 'customflash', array('class' => 'info'));
+				$this->Session->setFlash(__('Selamat datang, '. $this->Auth->user('display_name')), 'customflash', array('class' => 'info'));
 			} else {
 
-				$this->Session->setFlash(__('Welcome to our community, '. $this->Auth->user('display_name')), 'customflash', array('class' => 'info'));
+				$this->Session->setFlash(__('Selamat datang di Crowd Sourcing Facebook, '. $this->Auth->user('display_name')), 'customflash', array('class' => 'info'));
 			}
 			$this->redirect($this->Auth->loginRedirect);			
 		} else {
-			$this->Session->setFlash(__('Unknown Error could not verify the user: '. $this->Auth->user('display_name')), 'customflash', array('class' => 'danger'));
+			$this->Session->setFlash(__('Unknown Error, user tidak dapat diverifikasi: '. $this->Auth->user('display_name')), 'customflash', array('class' => 'danger'));
 		}
 	}
 }

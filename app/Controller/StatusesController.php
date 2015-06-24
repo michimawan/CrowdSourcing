@@ -4,10 +4,11 @@ App::uses('File', 'Utility');
 class StatusesController extends AppController {
 	public $uses = array('Status', 'KomentarStatus');
 	public $layout = "layout";
-
+	public $helpers = array('Html', 'Form', 'Csv'); 
 	public $components = array('Paginator');
 
-	// admin only
+	// priviledge: admin only
+	// method for showing all status
 	public function index() {
 		if($this->Auth->user()['role']=='user')
 			$this->redirect(array('controller' => 'Users', 'action' => 'user'));
@@ -33,7 +34,8 @@ class StatusesController extends AppController {
 		$this->set(compact("datas"));
 	}
 
-	// admin only
+	// priviledge: admin only
+	// method for showing all a single status and all comment related to it
 	public function view($id = null){
 		if($this->Auth->user()['role']=='user')
 			$this->redirect(array('controller' => 'Users', 'action' => 'user'));
@@ -104,6 +106,9 @@ class StatusesController extends AppController {
 		
 	}
 
+
+	// priviledge: this class
+	// method for getting a random comment to be labelled by user
 	private function randkomentar($id){
 		//baca maksimum label per komentar
 		/*
@@ -184,6 +189,9 @@ class StatusesController extends AppController {
 		return $datas;
 	}
 	*/
+
+	// priviledge: user 
+	// method for user can labeling a comment or not
 	public function labeling($id = null, $user = null, $id_komen = null, $id_status = null, $label = null){
 		if($this->Auth->user()['role']=='admin')
 			$this->redirect(array('controller' => 'Users', 'action' => 'index'));
@@ -205,7 +213,6 @@ class StatusesController extends AppController {
 
 		if($this->request->is('post')) {
 			
-
 			//cek jml_label di komen, apa sudah sesuai N ? kl sudah, set flash gagal
 			if($this->ceklabelkomennow($id_komen))
 				$this->Session->setFlash("Komentar '$id_komen' gagal dilabeli", 'customflash', array('class' => 'warning'));
@@ -238,14 +245,15 @@ class StatusesController extends AppController {
 		}
 	}
 
-	
-
-
+	// priviledge: user 
+	// method for user edit label that has given to a comment
 	public function edit($id_komentar = null, $id_label = null){
 		if($this->Auth->user()['role']=='admin')
 			$this->redirect(array('controller' => 'Users', 'action' => 'index'));
 
 		$this->set('title', 'Edit Label Komentar');
+		if($this->getLock() == 'true')
+			$this->redirect(array('controller' => 'Users', 'action' => 'user'));
 
 		if($this->request->is('post')){
 
@@ -271,20 +279,69 @@ class StatusesController extends AppController {
 			$this->redirect(array('action' => 'index'));
 		}
 	}
+ 
+	// method for export all comment and it's status
+	public function expKomentar(){
+		$datas = $this->Status->KomentarStatus->getKomen();
+		$this->set(compact('datas'));
+	    $this->layout = null;
 
+	    $this->autoLayout = false;
+	}
 
+	// method for export single status, and all comment that related to it
+	public function expStatus($id){
+		$datas = $this->Status->KomentarStatus->getStatus($id);
+		$this->set(compact('datas'));
+	    $this->layout = null;
+
+	    $this->autoLayout = false;
+	}
+
+	// method for count the final label that will be given to a comment
+	public function calculate(){
+		$datas = $this->Status->KomentarStatus->find('all');
+		$this->set(compact('datas'));
+
+		foreach($datas as $data){
+			$value = 0;
+			foreach ($data['TabelLabel'] as $label) {
+				if($label['nama_label'] == 'positif')
+					$value++;
+				else if($label['nama_label'] == 'negatif')
+					$value--;
+			}
+			
+			if($value > 0)
+				$value = 'positif';
+			else if($value == 0)
+				$value = 'netral';
+			else 
+				$value = 'negatif';
+
+			$label = array('id_komentar' => $data['KomentarStatus']['id_komentar'], 'label' => $value);
+			$this->Status->KomentarStatus->save($label);
+		}
+		$this->redirect(array('controller' => 'users', 'action' => 'index'));
+	}
+
+	// method for get total number of labels that have been made by all user
 	public function countlabel(){
 		return $this->Status->KomentarStatus->TabelLabel->find(
 			'count', array('fields' => array('TabelLabel.id_label'))
 		);
 	}
 
+	// method for count how many comments that exist in db
 	public function countkomentar(){
 		return $this->Status->KomentarStatus->find(
 			'count', array('fields' => array('KomentarStatus.id_komentar'))
 		);
 	}
 
+
+	// method for increment number of label that has been given at certain comment.
+	// this method also update the status of a comment, if labels count is the same as configuration file
 	private function inckomenlabel($id) {
 		$this->Status->KomentarStatus->updateAll(
 	        array('KomentarStatus.jml_label' => 'KomentarStatus.jml_label+1'),                    
@@ -312,6 +369,8 @@ class StatusesController extends AppController {
 		}
 	}
 
+	// method for check the label of a comment
+	// return true if the status = 'lengkap', else will be return false
 	private function ceklabelkomennow($id){
 		$statuslabel = $this->Status->KomentarStatus->find('first', array(
 			'conditions' => array('KomentarStatus.id_komentar' => $id),
@@ -326,6 +385,7 @@ class StatusesController extends AppController {
 			return false;
 	}
 	
+	// method for get the max number of label for a comment
 	private function getN(){
 		$file = new File(WWW_ROOT .  DS .'files'.DS .'setting.txt');
 		$json = $file->read(true, 'r');
@@ -333,6 +393,13 @@ class StatusesController extends AppController {
 		return $json->n;
 	}
 
-	
+	// method for get the current configuration for locking state
+	private function getLock(){
+		//baca maksimum label per komentar
+		$file = new File(WWW_ROOT .  DS .'files'.DS .'setting.txt');
+		$json = $file->read(true, 'r');
+		$json = json_decode($json);
+		return $json->lock;
+	}
 }
 ?>
