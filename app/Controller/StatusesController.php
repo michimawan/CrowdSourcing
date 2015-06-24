@@ -15,12 +15,6 @@ class StatusesController extends AppController {
 
 		$this->set('title','Daftar Status Facebook');
 		
-		/*
-		$datas = $this->Status->find(
-			'all', array('recursive' => 0)
-		);
-		*/
-		
 		$this->Paginator->settings = array(
 			'limit' => 5,
 			'recursive' => 0,
@@ -42,15 +36,7 @@ class StatusesController extends AppController {
 
 		if($id){
 			$this->set('title','Status Facebook');
-			/*
-			$datas = $this->Status->find(
-				'all', array('conditions' => array(
-					'Status.id_status' => $id),
-					'recursive' => 1
-				)
-			);
-			$this->set(compact("datas"));
-			*/
+
 			$status = $this->Status->find('all', array(
 				'conditions' => array('Status.id_status' => $id),
 				'recursive' => 0)
@@ -111,12 +97,6 @@ class StatusesController extends AppController {
 	// method for getting a random comment to be labelled by user
 	private function randkomentar($id){
 		//baca maksimum label per komentar
-		/*
-		$file = new File(WWW_ROOT .  DS .'files'.DS .'setting.txt');
-		$json = $file->read(true, 'r');
-		$json = json_decode($json);
-		$maxlabel = $json->n;
-		*/
 		$maxlabel = $this->getN();
 		//ambil username user
 		$users = $this->KomentarStatus->TabelLabel->User->find('first', 
@@ -130,65 +110,6 @@ class StatusesController extends AppController {
 		$datas = $this->KomentarStatus->getrandom($users, $maxlabel);
 		return $datas;
 	}
-
-	/*
-	private function randomkomentar($id){
-		//baca maksimum label per komentar
-		$file = new File(WWW_ROOT .  DS .'files'.DS .'setting.txt');
-		$json = $file->read(true, 'r');
-		$json = json_decode($json);
-		$maxlabel = $json->n;
-
-		//ambil username user
-		$users = $this->KomentarStatus->TabelLabel->User->find('first', 
-			array('conditions' => array('User.social_network_id' => $id),
-				'fields' => array('User.email'),
-				'recursive' => -1
-			)
-		);
-		$users = $users['User']['email'];
-		//$this->set(compact('users'));
-
-		
-		//ambil daftar komentar yang sudah dilabeli user terkait dari tabel label
-		$id_komentar_terlabel = $this->KomentarStatus->TabelLabel->find(
-			'all', array(
-				'conditions' => array('TabelLabel.username_pelabel' => $users),
-				'fields' => array('TabelLabel.id_komen'),
-				'recursive' => -1
-			)
-		);
-		//simpan dalam array
-		$terlabel = Array();
-		foreach ($id_komentar_terlabel as $data) {
-			$terlabel[] = $data['TabelLabel']['id_komen'];
-		}
-
-		//ambil 5 id komentar dari tabel komentar yang belum pernah dilabeli user berdasar id_komentar terlabel 
-		$id_komen = $this->KomentarStatus->find('list', array(
-			'conditions' => array(
-				'NOT' => array('KomentarStatus.id_komentar' => $terlabel)),
-			'fields' => array('KomentarStatus.id_komentar'),
-			'order' => 'RAND()',
-
-			//batasi jumlah label di sini
-
-			'limit' => 5
-			)
-		);
-		$id_komen = $id_komen[array_rand($id_komen)];
-		//ambil data terkait id_komen terpilih
-		$this->set('title','Daftar Komentar Facebook');
-		$datas = $this->KomentarStatus->find(
-			'all', array('conditions' => array(
-				'KomentarStatus.id_komentar' => $id_komen),
-				'recursive'=> 0
-			)
-		);
-		
-		return $datas;
-	}
-	*/
 
 	// priviledge: user 
 	// method for user can labeling a comment or not
@@ -354,12 +275,6 @@ class StatusesController extends AppController {
 			'recursive' => -1
 			)
 		);
-		/*
-    	debug($jmllabel['KomentarStatus']['jml_label']);
-    	debug($this->getN());
-    	debug($jmllabel);
-    	debug($this->getN());
-    	*/
 		//kalau sudah sama dengan N, update statusnya
 
 		if($jmllabel['KomentarStatus']['jml_label'] == $this->getN()){

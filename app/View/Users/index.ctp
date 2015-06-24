@@ -31,24 +31,17 @@
 <div class='profile'>
 	<div class='img col-xs-6'>
 		<img src="<?php echo $this->Auth->user()['picture']?>" class='img-rounded img-responsive'>
-		<?php //echo $this->Html->image('user.png', array('alt' => 'user', 'class'=>'img-rounded img-responsive')); ?>
 	</div>
 	<div class='setting right col-xs-2'>
 		
 		<?php echo $this->Html->image('setting.png', array('alt' => 'setting')); ?>
-		<div class='settings dispnone'>
-			  	<div class="form-group">
-			    	<label for="hargaperlabel">Harga per Label</label>
-			    	<input type="number" class="form-control" id="hargaperlabel" placeholder="Harga per Label" value="<?php echo $price; ?>">
-			  	</div>
-			  	<div class="form-group">
-			    	<label for="labelperkomen">Label per Komentar</label>
-			    	<input type="number" class="form-control" id="labelperkomen" placeholder="Label per Komentar" value="<?php echo $banyaklabel; ?>">
-			  	</div>
-			  	<div>
-			  		<button class="btn btn-default submit right">Submit</button>
-			  	</div>
-		</div>
+		<?php
+		echo $this->Form->create('User', array('action'=>'changesetting', 'class' => 'settings dispnone'));
+	echo $this->Form->input('harga', array('type' => 'number', 'label' => 'Harga:', 'default' => $price));
+	echo $this->Form->input('label', array('type' => 'number','label' => 'Label per Komentar:', 'default' =>  $banyaklabel));
+	echo $this->Form->submit('Simpan', array('class' => 'btn btn-default right'));
+	
+		?>
 	</div>
 	<div class='information col-xs-6'>
 		<h1>Selamat datang, <?php echo $admin[0]['User']['display_name']; ?></h1>

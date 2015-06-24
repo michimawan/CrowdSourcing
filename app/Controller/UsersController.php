@@ -11,17 +11,7 @@ class UsersController extends AppController {
 	// method for viewing all user that uses this app and the setting configuration
 	public function index() {
 		$this->set('title','Daftar Pengguna Facebook Crowdsourcing');
-		/*
-		$datas = $this->User->find(
-			'all', array(
-				'conditions' => array('role' => 'user'),
-				'fields' => array('User.id', 'User.username', 'User.display_name', 'User.total_label'),
-				'recursive' => 0
-			)
-		);
-		$this->set(compact('datas'));
-		*/
-		
+
 		if($this->Auth->user()['role']=='user')
 			$this->redirect(array('action' => 'user'));
 
@@ -275,28 +265,22 @@ class UsersController extends AppController {
         $this->redirect(array('action' => 'index'));
     }
 	
+	
 	// priviledge: admin 
 	// method for admin to change configuration file
-	public function changesetting($data){
-		if($this->Auth->user()['role']=='user')
-			$this->redirect(array('action' => 'user'));
-
-		$this->autoRender = false;
-		
-
-		if($this->request->is('ajax'))
-		{
+	public function changesetting(){
+		if($this->request->is('post')){
 			$lock = $this->getLock();
-			$data = split(" ", $data);
-			$datas['price'] = $data[0];
-			$datas['n'] = $data[1];
+			$cetak = $this->request->data;
+			$datas['price'] = $cetak['User']['harga'];
+			$datas['n'] = $cetak['User']['label'];
 			$datas['lock'] = $lock;
 
 			$maxnow = $this->User->TabelLabel->KomentarStatus->getMaxJmlLabel();
 		
-			if($maxnow[0][0]['maxi'] < $data[1]){
+			if($maxnow[0][0]['maxi'] < $cetak['User']['label']){
 				$this->User->TabelLabel->KomentarStatus->updatestatus('belum', $this->getN());
-			} else if($maxnow[0][0]['maxi'] == $data[1]){
+			} else if($maxnow[0][0]['maxi'] == $cetak['User']['label']){
 				
 				$datas['n'] = $maxnow[0][0]['maxi'];
 				$this->User->TabelLabel->KomentarStatus->updatestatus('lengkap', $maxnow[0][0]['maxi']);
@@ -310,13 +294,11 @@ class UsersController extends AppController {
 
 			$file = new File(WWW_ROOT .  DS .'files'.DS .'setting.txt', true);
 			$file->write($json);
-		}
-		else
-		{
 			$this->redirect(array('action'=>'index'));
-		}
-		
+		}	
 	}
+
+
 
 	// priviledge: user 
 	// method for increment total_label that has been made by a user
@@ -363,18 +345,6 @@ class UsersController extends AppController {
 		$json = $file->read(true, 'r');
 		$json = json_decode($json);
 		$this->set(compact('json'));
-         
-         /*
-        // if we get the post information, try to authenticate
-        if ($this->request->is('post')) {
-            if ($this->Auth->login()) {
-                $this->Session->setFlash(__('Welcome, '. $this->Auth->user('username')));
-                $this->redirect($this->Auth->redirectUrl());
-            } else {
-                $this->Session->setFlash(__('Invalid username or password'));
-            }
-        }
-        */
     }
  	
 	// method for process logout

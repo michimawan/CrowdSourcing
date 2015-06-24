@@ -7,12 +7,7 @@
 		<h1>Selamat datang, <?php echo $this->Auth->user()['display_name']; ?></h1>
 		<h3>Total Labeling: <?php echo $users[0]['User']['total_label'];?></h3>
 		<?php
-		/*)
-		if($tambahlabel == false && $canlabel == true)
-		echo $this->Html->link('beri label',
-			array('controller' => 'Statuses', 'action'=>'labeling', $this->Auth->user()['social_network_id']),
-			array('class' => 'btn btn-primary')
-		);*/
+		
 		if($tambahlabel == true)
 			echo "<h4>Anda sudah melabeli semua komentar yang disediakan !</h4>";
 		else if($canlabel == false)
