@@ -1,4 +1,5 @@
 <?php
+//debug($datas);
 $line = array_merge($datas[0]['Status'], $datas[0]['KomentarStatus']);
 
 $this->CSV->addRow(array_keys($line));

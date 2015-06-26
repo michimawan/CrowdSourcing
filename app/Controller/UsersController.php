@@ -265,7 +265,7 @@ class UsersController extends AppController {
         $this->redirect(array('action' => 'index'));
     }
 	
-	
+
 	// priviledge: admin 
 	// method for admin to change configuration file
 	public function changesetting(){
@@ -279,20 +279,21 @@ class UsersController extends AppController {
 			$maxnow = $this->User->TabelLabel->KomentarStatus->getMaxJmlLabel();
 		
 			if($maxnow[0][0]['maxi'] < $cetak['User']['label']){
+
 				$this->User->TabelLabel->KomentarStatus->updatestatus('belum', $this->getN());
+				$datas['lock'] = 'false';
 			} else if($maxnow[0][0]['maxi'] == $cetak['User']['label']){
 				
 				$datas['n'] = $maxnow[0][0]['maxi'];
 				$this->User->TabelLabel->KomentarStatus->updatestatus('lengkap', $maxnow[0][0]['maxi']);
 			} else{
-				$datas['n'] = $maxnow[0][0]['maxi'];
-				echo "no ".$datas['n'];
-			}
 				
-
+				$datas['n'] = $maxnow[0][0]['maxi'];
+			}
+			
 			$json = json_encode($datas);
 
-			$file = new File(WWW_ROOT .  DS .'files'.DS .'setting.txt', true);
+			$file = new File(WWW_ROOT .  DS . 'files' . DS .'setting.txt', true);
 			$file->write($json);
 			$this->redirect(array('action'=>'index'));
 		}	
@@ -345,6 +346,7 @@ class UsersController extends AppController {
 		$json = $file->read(true, 'r');
 		$json = json_decode($json);
 		$this->set(compact('json'));
+         
     }
  	
 	// method for process logout

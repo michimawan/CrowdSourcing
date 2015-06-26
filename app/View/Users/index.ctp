@@ -42,6 +42,7 @@
 	echo $this->Form->submit('Simpan', array('class' => 'btn btn-default right'));
 	
 		?>
+		
 	</div>
 	<div class='information col-xs-6'>
 		<h1>Selamat datang, <?php echo $admin[0]['User']['display_name']; ?></h1>

@@ -394,7 +394,6 @@ Cache::config('_cake_model_', array(
     "Google" => array(
         "enabled" => true,
         "keys" => array("id" => "","secret" => ""),
-        // example
         //"keys" => array("id" => "10367128041-30ctg8grs8cth520jfp18s4h2tm1r1t8.apps.googleusercontent.com","secret" => "3guFB3CeU0E5-gEsXohTZLIp"),
     )
 ));

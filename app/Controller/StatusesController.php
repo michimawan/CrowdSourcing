@@ -15,6 +15,12 @@ class StatusesController extends AppController {
 
 		$this->set('title','Daftar Status Facebook');
 		
+		/*
+		$datas = $this->Status->find(
+			'all', array('recursive' => 0)
+		);
+		*/
+		
 		$this->Paginator->settings = array(
 			'limit' => 5,
 			'recursive' => 0,
@@ -25,6 +31,19 @@ class StatusesController extends AppController {
 
 		$datas = $this->Paginator->paginate('Status');
 		
+		//lock hanya muncul jika semua data sudah terlabeli
+		$lengkap = $this->Status->KomentarStatus->find('all', array(
+			'conditions' => array('KomentarStatus.status' => 'belum'),
+			'recursive' => -1
+			)
+		);
+		
+		if($lengkap);
+		else{
+			$lockstate = $this->getLock();
+			$this->set(compact('lockstate'));
+		}
+
 		$this->set(compact("datas"));
 	}
 
@@ -275,8 +294,8 @@ class StatusesController extends AppController {
 			'recursive' => -1
 			)
 		);
-		//kalau sudah sama dengan N, update statusnya
 
+		//kalau sudah sama dengan N, update statusnya
 		if($jmllabel['KomentarStatus']['jml_label'] == $this->getN()){
 			$data = array('id_komentar' => $id, 'status' => 'lengkap');
 			// This will update Recipe with id 10

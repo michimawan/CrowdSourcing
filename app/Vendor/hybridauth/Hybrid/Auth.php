@@ -368,9 +368,38 @@ class Hybrid_Auth
 
 	// --------------------------------------------------------------------
 
+	/*
+	 * @param bool $request_uri true to get $_SERVER['REQUEST_URI'], false for $_SERVER['PHP_SELF']
+	 * @return string
+	 */
+	/*
+	public static function getCurrentUrl($request_uri = true) {
+		if (php_sapi_name() == 'cli') {
+			return '';
+		}
+		
+		$protocol = 'http://';
+		
+		if ((isset($_SERVER['HTTPS']) && ( $_SERVER['HTTPS'] == 'on' || $_SERVER['HTTPS'] == 1 ))
+			|| (isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] == 'https')) {
+			$protocol = 'https://';
+		}
+
+		$url = $protocol . $_SERVER['HTTP_HOST'];
+		
+		if ($request_uri) {
+			$url .= $_SERVER['REQUEST_URI'];
+		} else {
+			$url .= $_SERVER['PHP_SELF'];
+		}
+		// return current url
+		return $url;
+	}
+	*/
 	/**
 	* Utility function, return the current url. TRUE to get $_SERVER['REQUEST_URI'], FALSE for $_SERVER['PHP_SELF']
 	*/
+	
 	public static function getCurrentUrl( $request_uri = true ) 
 	{
 		if(
@@ -403,4 +432,5 @@ class Hybrid_Auth
 		// return current url
 		return $url;
 	}
+	
 }

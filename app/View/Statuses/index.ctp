@@ -13,8 +13,9 @@
 			array('class' => 'btn btn-info right')
 		);
 
+		if(isset($lockstate)){
 		echo $this->Html->link("Export Status (.csv)", array('controller' => 'statuses','action'=>'expStatus', $data['Status']['id_status']), array('class' => 'btn btn-primary left'));
-	
+		}
 		?>
 	</div>
 	

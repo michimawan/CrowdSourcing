@@ -25,7 +25,6 @@
 <div class='profile'>
 	<div class='img left col-xs-4'>
 		<img src="<?php echo $users[0]['User']['picture']?>" class='img-rounded img-responsive'>
-		
 	</div>
 	<div class='information left col-xs-3'>
 		<h1><?php echo $users[0]['User']['display_name']; ?></h1>
