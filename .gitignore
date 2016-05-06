@@ -1,0 +1,14 @@
+app/Config/database.php
+app/Config/core.php
+app/tmp/
+vendors/
+plugins/
+lib/
+
+index.php
+README.md
+composer.json
+build.xml
+build.properties
+.travis.yml
+.htaccess
