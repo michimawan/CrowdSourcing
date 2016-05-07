@@ -1,11 +1,11 @@
 <?php
 	$positif = $negatif = $netral = $sum = 0;
 	foreach ($chart as $labels) {
-		if($labels['TabelLabel']['nama_label'] == 'positif')
+		if($labels['Label']['nama_label'] == 'positif')
 			$positif++;
-		else if($labels['TabelLabel']['nama_label'] == 'negatif')
+		else if($labels['Label']['nama_label'] == 'negatif')
 			$negatif++;
-		else if($labels['TabelLabel']['nama_label'] == 'netral')
+		else if($labels['Label']['nama_label'] == 'netral')
 			$netral++;
 
 		$sum++;
@@ -49,10 +49,10 @@
 			?>
 			<tr>
 				<td><?php echo $i; ?></td>
-				<td><?php echo $labels['KomentarStatus']['Status']['teks_status']; ?></td>
-				<td><?php echo $labels['KomentarStatus']['komentar']; ?></td>
-				<td><?php echo $labels['TabelLabel']['waktu_melabel']; ?></td>
-				<td><?php echo $labels['TabelLabel']['nama_label'] ?></td>
+				<td><?php echo $labels['Komentar']['Status']['teks_status']; ?></td>
+				<td><?php echo $labels['Komentar']['komentar']; ?></td>
+				<td><?php echo $labels['Label']['waktu_melabel']; ?></td>
+				<td><?php echo $labels['Label']['nama_label'] ?></td>
 
 			</tr>
 			<?php

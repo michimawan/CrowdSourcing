@@ -14,8 +14,8 @@
 		foreach ($datas as $komen) {
 		?>
 		<div class="comment">
-			<h5><?php echo $komen['KomentarStatus']['nama_pembuat']; ?></h5>
-			<p><?php echo $komen['KomentarStatus']['komentar']; ?></p>
+			<h5><?php echo $komen['Komentar']['nama_pembuat']; ?></h5>
+			<p><?php echo $komen['Komentar']['komentar']; ?></p>
 			<div class='clear'></div>
 
 		</div>
@@ -26,21 +26,21 @@
 
 		echo "<div class='col-xs-4'>";
 		echo $this->Form->postLink('Positif', 
-			array('action'=>'edit', $labels['TabelLabel']['id_label'], 'positif'),
+			array('action'=>'edit', $labels['Label']['id_label'], 'positif'),
 			array('class'=> 'btn btn-primary auto', 'confirm' => 'anda yakin dengan pilihan ini?')
 		);
 		echo "</div>";
 		
 		echo "<div class='col-xs-4'>";
 		echo $this->Form->postLink('Netral', 
-			array('action'=>'edit', $labels['TabelLabel']['id_label'], 'netral'),
+			array('action'=>'edit', $labels['Label']['id_label'], 'netral'),
 			array('class'=> 'btn btn-warning auto', 'confirm' => 'anda yakin dengan pilihan ini?')
 		);
 		echo "</div>";
 		
 		echo "<div class='col-xs-4'>";
 		echo $this->Form->postLink('Negatif', 
-			array('action'=>'edit', $labels['TabelLabel']['id_label'], 'negatif'),
+			array('action'=>'edit', $labels['Label']['id_label'], 'negatif'),
 			array('class'=> 'btn btn-danger auto', 'confirm' => 'anda yakin dengan pilihan ini?')
 		);
 		echo "</div>";
@@ -48,7 +48,7 @@
 		
 		?>
 		</div>
-		<div class='dispnone' id='selected' attr="<?php echo $labels['TabelLabel']['nama_label']?>"></div>
+		<div class='dispnone' id='selected' attr="<?php echo $labels['Label']['nama_label']?>"></div>
 <?php 
 	}
 	?>

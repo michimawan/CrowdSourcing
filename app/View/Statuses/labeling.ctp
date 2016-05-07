@@ -16,8 +16,8 @@
 		foreach ($datas as $komen) {
 		?>
 		<div class="comment">
-			<h5><?php echo $komen['KomentarStatus']['nama_pembuat']; ?></h5>
-			<p><?php echo $komen['KomentarStatus']['komentar']; ?></p>
+			<h5><?php echo $komen['Komentar']['nama_pembuat']; ?></h5>
+			<p><?php echo $komen['Komentar']['komentar']; ?></p>
 			<div class='clear'></div>
 
 		</div>
@@ -28,21 +28,21 @@
 
 		echo "<div class='col-xs-4'>";
 		echo $this->Form->postLink('Positif', 
-			array('action'=>'labeling', $userid, $usernm, $data['KomentarStatus']['id_komentar'], $data['KomentarStatus']['id_status'], 'positif'),
+			array('action'=>'labeling', $userid, $usernm, $data['Komentar']['id_komentar'], $data['Komentar']['id_status'], 'positif'),
 			array('class'=> 'btn btn-primary auto', 'confirm' => 'anda yakin dengan pilihan ini?')
 		);
 		echo "</div>";
 		
 		echo "<div class='col-xs-4'>";
 		echo $this->Form->postLink('Netral', 
-			array('action'=>'labeling', $userid, $usernm, $data['KomentarStatus']['id_komentar'], $data['KomentarStatus']['id_status'], 'netral'),
+			array('action'=>'labeling', $userid, $usernm, $data['Komentar']['id_komentar'], $data['Komentar']['id_status'], 'netral'),
 			array('class'=> 'btn btn-warning auto', 'confirm' => 'anda yakin dengan pilihan ini?')
 		);
 		echo "</div>";
 		
 		echo "<div class='col-xs-4'>";
 		echo $this->Form->postLink('Negatif', 
-			array('action'=>'labeling', $userid, $usernm, $data['KomentarStatus']['id_komentar'], $data['KomentarStatus']['id_status'], 'negatif'),
+			array('action'=>'labeling', $userid, $usernm, $data['Komentar']['id_komentar'], $data['Komentar']['id_status'], 'negatif'),
 			array('class'=> 'btn btn-danger auto', 'confirm' => 'anda yakin dengan pilihan ini?')
 		);
 		echo "</div>";

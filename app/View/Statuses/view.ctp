@@ -14,20 +14,20 @@
 	<h3>Komentar:</h3>
 		<?php
 		foreach ($komentars as $komen) {
-		if($komen['KomentarStatus']['status'] == 'lengkap'){
+		if($komen['Komentar']['status'] == 'lengkap'){
 			echo "<div class='comment lengkap'>";
 		} else {
 			echo "<div class='comment'>";
 		}
 		?>
-			<h5><?php echo $komen['KomentarStatus']['nama_pembuat']; ?></h5>
-			<p><?php echo $komen['KomentarStatus']['komentar']; ?></p>
+			<h5><?php echo $komen['Komentar']['nama_pembuat']; ?></h5>
+			<p><?php echo $komen['Komentar']['komentar']; ?></p>
 			<div class='clear'></div>
 			<?php
 				$pos = $net = $neg = 0;
 				$arrs[] = Array();
 				$arrs['pos'] = $arrs['net'] = $arrs['neg']  = "";
-				foreach ($komen['TabelLabel'] as $data) {
+				foreach ($komen['Label'] as $data) {
 					if($data['nama_label'] == 'positif'){
 						$pos++;
 						if(strlen($arrs['pos']) == 0)
@@ -52,37 +52,37 @@
 				}
 
 			?>
-			<div id="labels<?php echo $komen['KomentarStatus']['id_komentar'];?>" >
+			<div id="labels<?php echo $komen['Komentar']['id_komentar'];?>" >
 				<ul class="nav nav-pills" role="tablist">
-				  	<li role="presentation"><a href="javascript:void(0)">Sudah dilabeli<span class="badge"><?php echo $komen['KomentarStatus']['jml_label']."x";?></span></a></li>
+				  	<li role="presentation"><a href="javascript:void(0)">Sudah dilabeli<span class="badge"><?php echo $komen['Komentar']['jml_label']."x";?></span></a></li>
 				  	
-				  	<?php if($maxlabel - $komen['KomentarStatus']['jml_label'] > 0){ ?>
-				  	<li role="presentation"><a href="javascript:void(0)">kurang<span class="badge"><?php echo ($maxlabel - $komen['KomentarStatus']['jml_label'])."x";?></span></a></li>
+				  	<?php if($maxlabel - $komen['Komentar']['jml_label'] > 0){ ?>
+				  	<li role="presentation"><a href="javascript:void(0)">kurang<span class="badge"><?php echo ($maxlabel - $komen['Komentar']['jml_label'])."x";?></span></a></li>
 				  	<?php } ?>
 
-				  	<li role="presentation" attr="pos-<?php echo $komen['KomentarStatus']['id_komentar'];?>"><a href="javascript:void(0)">Positif<span class="badge"><?php echo $pos;?></span></a></li>
-				  	<li role="presentation" attr="net-<?php echo $komen['KomentarStatus']['id_komentar'];?>"><a href="javascript:void(0)">Netral<span class="badge"><?php echo $net;?></span></a></li>
-				  	<li role="presentation" attr="neg-<?php echo $komen['KomentarStatus']['id_komentar'];?>"><a href="javascript:void(0)">Negatif<span class="badge"><?php echo $neg;?></span></a></li>
+				  	<li role="presentation" attr="pos-<?php echo $komen['Komentar']['id_komentar'];?>"><a href="javascript:void(0)">Positif<span class="badge"><?php echo $pos;?></span></a></li>
+				  	<li role="presentation" attr="net-<?php echo $komen['Komentar']['id_komentar'];?>"><a href="javascript:void(0)">Netral<span class="badge"><?php echo $net;?></span></a></li>
+				  	<li role="presentation" attr="neg-<?php echo $komen['Komentar']['id_komentar'];?>"><a href="javascript:void(0)">Negatif<span class="badge"><?php echo $neg;?></span></a></li>
 				  	
 				  	
-				  	<li role="presentation"><a href="javascript:void(0)">Status:<span class="badge"><?php echo $komen['KomentarStatus']['status'];?></span></a></li>
+				  	<li role="presentation"><a href="javascript:void(0)">Status:<span class="badge"><?php echo $komen['Komentar']['status'];?></span></a></li>
 				</ul>
 
-				<div class="panel panel-default xs3 dispnone" id="pos-<?php echo $komen['KomentarStatus']['id_komentar'];?>">
+				<div class="panel panel-default xs3 dispnone" id="pos-<?php echo $komen['Komentar']['id_komentar'];?>">
 					<div class="panel-heading">Positif</div>
 					<div class="panel-body">
 				    	<p><?php echo $arrs['pos']?></p>
 					</div>
 				</div>
 
-				<div class="panel panel-default xs3 dispnone" id="net-<?php echo $komen['KomentarStatus']['id_komentar'];?>">
+				<div class="panel panel-default xs3 dispnone" id="net-<?php echo $komen['Komentar']['id_komentar'];?>">
 					<div class="panel-heading">Netral</div>
 					<div class="panel-body">
 				    	<p><?php echo $arrs['net']?></p>
 					</div>
 				</div>
 
-				<div class="panel panel-default xs3 dispnone" id="neg-<?php echo $komen['KomentarStatus']['id_komentar'];?>">
+				<div class="panel panel-default xs3 dispnone" id="neg-<?php echo $komen['Komentar']['id_komentar'];?>">
 					<div class="panel-heading">Negatif</div>
 					<div class="panel-body">
 				    	<p><?php echo $arrs['neg']?></p>

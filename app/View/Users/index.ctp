@@ -2,11 +2,11 @@
 	$positif = $negatif = $netral = $sum = 0;
 	foreach ($labels as $label) {
 		
-		if($label['TabelLabel']['nama_label'] == 'positif')
+		if($label['Label']['nama_label'] == 'positif')
 			$positif++;
-		else if($label['TabelLabel']['nama_label'] == 'negatif')
+		else if($label['Label']['nama_label'] == 'negatif')
 			$negatif++;
-		else if($label['TabelLabel']['nama_label'] == 'netral')
+		else if($label['Label']['nama_label'] == 'netral')
 			$netral++;
 
 		$sum++;

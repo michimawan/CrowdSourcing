@@ -1,12 +1,14 @@
 <?php
 App::uses('AuthComponent', 'Controller/Component');
-class User extends AppModel {
+
+class User extends AppModel
+{
     public $primaryKey = 'email';
 
-    public $hasMany = array(
-        'TabelLabel' => array(
-            'className' => 'TabelLabel',
+    public $hasMany = [
+        'Label' => [
+            'className' => 'Label',
             'foreignKey'=> 'username_pelabel'
-        )
-    );
+        ]
+    ];
 }

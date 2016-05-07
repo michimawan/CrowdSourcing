@@ -1,16 +1,16 @@
 <?php
-class Status extends AppModel {
-	//declare custom primary key, default PK is id
-	public $primaryKey = 'id_status';
+class Status extends AppModel
+{
+    public $useTable = 'statuses';
 
-	//define one to many
-	public $hasMany = array(
-		'KomentarStatus' => array(
-			'className' => 'KomentarStatus',
-			'order' => 'KomentarStatus.waktu_komen ASC',
-			'foreignKey'=>'id_status'
-		)
-	);
-	
+    //declare custom primary key, default PK is id
+    public $primaryKey = 'id_status';
+
+    public $hasMany = [
+        'Komentar' => [
+            'className' => 'Komentar',
+            'order' => 'Komentar.waktu_komen ASC',
+            'foreignKey'=>'id_status'
+        ]
+    ];
 }
-?>

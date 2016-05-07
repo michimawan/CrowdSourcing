@@ -46,16 +46,16 @@
 			?>
 			<tr>
 				<td><?php echo $i; ?></td>
-				<td><?php echo $labels['KomentarStatus']['Status']['teks_status']; ?></td>
-				<td><?php echo $labels['KomentarStatus']['komentar']; ?></td>
-				<td><?php echo $labels['TabelLabel']['waktu_melabel']; ?></td>
-				<td><?php echo $labels['TabelLabel']['nama_label'] ?></td>
+				<td><?php echo $labels['Komentar']['Status']['teks_status']; ?></td>
+				<td><?php echo $labels['Komentar']['komentar']; ?></td>
+				<td><?php echo $labels['Label']['waktu_melabel']; ?></td>
+				<td><?php echo $labels['Label']['nama_label'] ?></td>
 				<td>
 					<?php 
 					if($lockstate == 'false')
 					echo $this->Html->link(
 						'edit',
-						array('controller' => 'Statuses', 'action' => 'edit', $labels['KomentarStatus']['id_komentar'], $labels['TabelLabel']['id_label']),
+						array('controller' => 'Statuses', 'action' => 'edit', $labels['Komentar']['id_komentar'], $labels['Label']['id_label']),
 						array('class' => 'btn btn-primary btn-sm')
 					);
 					?>

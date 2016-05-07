@@ -31,29 +31,27 @@ App::uses('Controller', 'Controller');
  * @link		http://book.cakephp.org/2.0/en/controllers.html#the-app-controller
  */
 class AppController extends Controller {
-	public $components = array(
-    'Session',
-    'Auth' => array(
-        //'adminRedirect' => array('controller' => 'Users', 'action' => 'index'),
-        'loginRedirect' => array('controller' => 'Users', 'action' => 'index'),
-        'logoutRedirect' => array('controller' => 'Users', 'action' => 'index'),
-        'authError' => 'You must be logged in to view this page.',
-        'loginError' => 'Must use @ti.ukdw.ac.id domain for using this app'
- 
-    ));
-	 
-	// only allow the login controllers only
-	public function beforeFilter() {
-		//$this->Auth->authorize = 'Controller';
-	    $this->Auth->allow('social_login', 'login');
-	}
-	
-	function _setErrorLayout(){
-		if($this->name == 'CakeError')
-			$this->layout = 'error';
-	}
+    public $components = array(
+        'Session',
+        'Auth' => array(
+            'loginRedirect' => array('controller' => 'Users', 'action' => 'index'),
+            'logoutRedirect' => array('controller' => 'Users', 'action' => 'index'),
+            'authError' => 'You must be logged in to view this page.',
+            'loginError' => 'Must use @ti.ukdw.ac.id domain for using this app'
 
-	function beforeRender(){
-		$this->_setErrorLayout();
-	}
+        ));
+
+    // only allow the login controllers only
+    public function beforeFilter() {
+        $this->Auth->allow('social_login', 'login');
+    }
+
+    function _setErrorLayout(){
+        if($this->name == 'CakeError')
+            $this->layout = 'error';
+    }
+
+    function beforeRender(){
+        $this->_setErrorLayout();
+    }
 }
