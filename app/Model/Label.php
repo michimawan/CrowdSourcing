@@ -6,10 +6,7 @@ class Label extends AppModel
     public $primaryKey = 'id_label';
 
     public $belongsTo = [
-        'Komentar' => ['foreignKey'=>'id_komen']
-    ];
-
-    public $hasOne = [
-        'User' => ['foreignKey'=>'email']
+        'Komentar' => ['foreignKey'=>'id_komen'],
+        'User' => ['foreignKey'=>'username_pelabel']
     ];
 }

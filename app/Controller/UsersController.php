@@ -1,5 +1,7 @@
 <?php
-App::uses('File', 'Utility');
+App::import('Lib', 'SettingManager');
+App::import('Repository', 'KomentarRepository');
+App::import('Repository', 'LabelRepository');
 
 class UsersController extends AppController
 {
@@ -14,7 +16,8 @@ class UsersController extends AppController
     {
         $this->set('title','Daftar Pengguna Facebook Crowdsourcing');
 
-        if($this->Auth->user()['role']=='user')
+        $currentUser = $this->Auth->user();
+        if($currentUser['role'] == 'user')
             $this->redirect(['action' => 'user']);
 
         $this->Paginator->settings = [
@@ -24,44 +27,24 @@ class UsersController extends AppController
             'limit' => 5,
             'maxLimit' => 100,
         ];
-
         $datas = $this->Paginator->paginate('User');
+        $labels = (new LabelRepository())->getAllLabel();
+        $banyakkomen = (new KomentarRepository())->count();
+        $json = $this->settingGetData();
 
-        $this->set(['datas' => $datas]);
-
-        $labels = $this->User->Label->find('all', [
-            'recursive' => -1]);
-
-        $this->set(['labels' => $labels]);
-
-        $admin = $this->User->find('all', [
-            'conditions' => ['role' => 'admin'],
-            'fields' => ['User.id', 'User.email', 'User.display_name'],
-            'limit' => 1,
-            'recursive' => -1
+        $this->set([
+            'datas' => $datas,
+            'labels' => $labels,
+            'admin' => $currentUser,
+            'banyakkomen' => $banyakkomen,
+            'json' => $json,
         ]);
-        $this->set(['admin' => $admin]);
-
-        $banyakkomen = $this->User->Label->Komentar->find('count', [
-            'fields' => ['Komentar.id_komentar']
-        ]);
-        $this->set(['banyakkomen' => $banyakkomen]);
-
-        //read
-        $file = new File(WWW_ROOT .  DS .'files'.DS .'setting.txt');
-        $json = $file->read(true, 'r');
-        $json = json_decode($json);
-        $this->set(['json' => $json]);
 
         //lock hanya muncul jika semua data sudah terlabeli
-        $lengkap = $this->User->Label->Komentar->find('all', [
-            'conditions' => ['Komentar.status' => 'belum'],
-            'recursive' => -1
-        ]);
-
+        $lengkap = (new KomentarRepository())->getUnfinishedLabeledComment();
         if($lengkap);
         else {
-            $lockstate = $this->getLock();
+            $lockstate = $this->settingGetLock();
             $this->set(['lockstate' => $lockstate]);
         }
     }
@@ -72,97 +55,59 @@ class UsersController extends AppController
     {
         $this->set('title', 'Facebook Crowdsourcing');
 
-        $id = $this->Auth->user()['social_network_id'];
-        if($id){
-            $users = $this->User->find('all', [
-                'conditions' => ['User.social_network_id' => $id],
-                'fields' => ['User.id', 'User.email', 'User.display_name', 'User.total_label'],
-                'recursive' => -1
-            ]);
-            $this->set(['users' => $users]);
-
-            $user = $users[0]['User']['email'];
-
-            $this->Paginator->settings = [
-                'conditions' => ['Label.username_pelabel' => $user],
-                'recursive' => 2,
-                'paramType' => 'querystring',
-                'limit' => 5,
-                'maxLimit' => 100,
-            ];
-
+        $currentUser = $this->Auth->user();
+        if($currentUser){
+            $this->Paginator->settings = $this->getPaginatorSettingForAllLabel($currentUser['email']);
             $datas = $this->Paginator->paginate('Label');
-            $this->set(['datas' => $datas]);
 
-            //hitung total komentar
-            $komentars = $this->User->Label->Komentar->find('count');
+            $cannotLabellingAgain = (new LabelRepository())->checkLabellingPermissionForAUser($currentUser['social_network_id']);
 
-            //lihat user sudah melabeli berapa komentar
-            $labelsekarang = $this->User->Label->Komentar->countUsers($id);
-            //buat permissionnya
-            $tambahlabel = false;
-            if($labelsekarang[0][0]['jumlah'] == $komentars)
-                $tambahlabel = true;
+            $isExistCommentWithLabel = $this->canLabel();
+            $lockstate = $this->settingGetLock();
 
-            $this->set(['tambahlabel' => $tambahlabel]);
-
-            $canlabel = $this->canLabel();
-            $this->set(['canlabel' => $canlabel]);
-
-            $lockstate = $this->getLock();
-            $this->set(['lockstate' => $lockstate]);
+            $this->set([
+                'currentUser' => $currentUser,
+                'datas' => $datas,
+                'isExistCommentWithLabel' => $isExistCommentWithLabel,
+                'cannotLabellingAgain' => $cannotLabellingAgain,
+                'lockstate' => $lockstate,
+            ]);
         }
     }
 
-    // method for get lock state in configuration file
-    private function getLock()
+    private function settingGetData()
     {
-        //baca maksimum label per komentar
-        $file = new File(WWW_ROOT .  DS .'files'.DS .'setting.txt');
-        $json = $file->read(true, 'r');
-        $json = json_decode($json);
-        return $json->lock;
+        return (new SettingManager('setting.txt'))->getData();
     }
 
-    // admin only
+    private function settingGetN()
+    {
+        return (new SettingManager('setting.txt'))->getN();
+    }
+
+    private function settingGetLock()
+    {
+        return (new SettingManager('setting.txt'))->getLock();
+    }
+
     // method for set lock state
     public function setLock($value)
     {
-        //baca maksimum label per komentar
-        $file = new File(WWW_ROOT .  DS .'files'.DS .'setting.txt');
-        $json = $file->read(true, 'r');
-        $json = json_decode($json);
-
-        $datas['price'] = $json->price;
-        $datas['n'] = $json->n;
-        $datas['lock'] = $value;
-        $json = json_encode($datas);
-
-        $file = new File(WWW_ROOT .  DS .'files'.DS .'setting.txt', true);
-        $file->write($json);
+        $data['lock'] = $value;
+        (new SettingManager('setting.txt'))->setLock($data);
 
         //saat di lock, maka update label akhir sebuah komentar
         if($value == 'true')
-            $this->redirect(['controller' => 'Statuses','action'=>'calculate']);
+            (new KomentarRepository())->determineFinalLabelForEveryComment();
         else
             $this->redirect(['action'=>'index']);
     }
 
-    // priviledge: user
-    // method for get number of max label in configuration file
-    private function getN()
-    {
-        //baca maksimum label per komentar
-        $file = new File(WWW_ROOT .  DS .'files'.DS .'setting.txt');
-        $json = $file->read(true, 'r');
-        $json = json_decode($json);
-        return $json->n;
-    }
 
     // method for check, is it still available to give a label
     private function canLabel()
     {
-        $maxlabel = $this->getN();
+        $maxlabel = $this->settingGetN();
 
         $komentarlabel = $this->User->Label->Komentar->getRandom($this->Auth->user()['email'], $maxlabel);
         if($komentarlabel)
@@ -176,7 +121,7 @@ class UsersController extends AppController
     // method for view comments that have been labelled by a user
     public function view($id = null)
     {
-        if($this->Auth->user()['role']=='user')
+        if($this->Auth->user()['role'] == 'user')
             $this->redirect(['action' => 'user']);
 
         $this->set('title', 'Data Pengguna Facebook Crowdsourcing');
@@ -187,27 +132,18 @@ class UsersController extends AppController
                 'fields' => ['User.id', 'User.email', 'User.display_name', 'User.total_label', 'User.picture'],
                 'recursive' => -1
             ]);
-            $this->set(['users' => $users]);
 
             $user = $users[0]['User']['email'];
-
-            $this->Paginator->settings = [
-                'conditions' => ['Label.username_pelabel' => $user],
-                'recursive' => 2,
-                'paramType' => 'querystring',
-                'limit' => 5,
-                'maxLimit' => 100,
-            ];
-
+            $this->Paginator->settings = $this->getPaginatorSettingForAllLabel($user);
             $datas = $this->Paginator->paginate('Label');
-            $this->set(['datas' => $datas]);
 
-            $chart = $this->Label->find('all', [
-                'conditions' => ['Label.username_pelabel' => $user],
-                'recursive' => -1,
-                'fields' => ['Label.nama_label']
+            $chart = (new LabelRepository())->getAllLabelRelatedToUser($user);
+
+            $this->set([
+                'users' => $users,
+                'datas' => $datas,
+                'chart' => $chart,
             ]);
-            $this->set(['chart' => $chart]);
         } else {
             $this->redirect(['action' => 'index']);
         }
@@ -263,43 +199,30 @@ class UsersController extends AppController
     public function changesetting()
     {
         if($this->request->is('post')) {
-            $lock = $this->getLock();
+            $lock = $this->settingGetLock();
             $cetak = $this->request->data;
             $datas['price'] = $cetak['User']['harga'];
             $datas['n'] = $cetak['User']['label'];
             $datas['lock'] = $lock;
 
-            $maxnow = $this->User->Label->Komentar->getMaxJmlLabel();
+            $maxLabelCount = (new KomentarRepository())->getMaxLabelInAComment();
 
-            if($maxnow[0][0]['maxi'] < $cetak['User']['label']){
+            if($maxLabelCount[0][0]['maxLabelCount'] < $cetak['User']['label']){
 
-                $this->User->Label->Komentar->updateStatus('belum', $this->getN());
+                (new KomentarRepository())->setStatusToWhereJmlLabel('belum', $this->settingGetN());
                 $datas['lock'] = 'false';
-            } else if($maxnow[0][0]['maxi'] == $cetak['User']['label']){
+            } else if($maxLabelCount[0][0]['maxLabelCount'] == $cetak['User']['label']){
 
-                $datas['n'] = $maxnow[0][0]['maxi'];
-                $this->User->Label->Komentar->updateStatus('lengkap', $maxnow[0][0]['maxi']);
+                (new KomentarRepository())->setStatusToWhereJmlLabel('lengkap', $this->settingGetN());
+                $datas['n'] = $maxLabelCount[0][0]['maxLabelCount'];
             } else{
 
-                $datas['n'] = $maxnow[0][0]['maxi'];
+                $datas['n'] = $maxLabelCount[0][0]['maxLabelCount'];
             }
 
-            $json = json_encode($datas);
-
-            $file = new File(WWW_ROOT .  DS . 'files' . DS .'setting.txt', true);
-            $file->write($json);
+            (new SettingManager('setting.txt'))->setData($datas);
             $this->redirect(['action'=>'index']);
         }
-    }
-
-    // priviledge: user
-    // method for increment total_label that has been made by a user
-    public function incrementLabel($id)
-    {
-        $this->User->updateAll(
-            ['User.total_label' => 'User.total_label+1'],
-            ['User.social_network_id' => $id]
-        );
     }
 
     // LOGIN SECTION
@@ -316,29 +239,22 @@ class UsersController extends AppController
     // method for provide login page
     public function login()
     {
+        $this->set('title', 'Crowd Sourcing Facebook');
+
         //if already logged-in, redirect
         if($this->Session->check('Auth.User')) {
             $this->redirect(['action' => 'index']);
         }
 
-        $this->set('title', 'Crowd Sourcing Facebook');
+        $labelCount = (new LabelRepository())->count();
+        $commentCount = (new KomentarRepository())->count();
+        $json = $this->settingGetData();
 
-        App::import('Controller', 'Statuses');
-        $StatusesController = new StatusesController;
-
-        $labels = $StatusesController->countlabel();
-        $this->set(['labels' => $labels]);
-
-        $comments = $StatusesController->countkomentar();
-        $this->set(['comments' => $comments]);
-
-        $StatusesController = null;
-
-        //read
-        $file = new File(WWW_ROOT .  DS .'files'.DS .'setting.txt');
-        $json = $file->read(true, 'r');
-        $json = json_decode($json);
-        $this->set(['json' => $json]);
+        $this->set([
+            'labelCount' => $labelCount,
+            'commentCount' => $commentCount,
+            'json' => $json
+        ]);
     }
 
     // method for process logout
@@ -437,5 +353,30 @@ class UsersController extends AppController
         } else {
             $this->Session->setFlash(__('Unknown Error, user tidak dapat diverifikasi: '. $this->Auth->user('display_name')), 'customflash', ['class' => 'danger']);
         }
+    }
+
+
+    private function getPaginatorSettingForAllLabel($userEmail)
+    {
+        return [
+            'conditions' => ['Label.username_pelabel' => $userEmail],
+            'recursive' => 1,
+            'paramType' => 'querystring',
+            'joins' => [
+                [
+                    'table' => 'statuses',
+                    'alias' => 'Status',
+                    'type' => 'LEFT',
+                    'conditions' => ['Label.id_status = Status.id_status']
+                ]
+            ],
+            'fields' => [
+                'Label.id_label', 'Label.id_status', 'Label.id_komen', 'Label.username_pelabel', 'Label.waktu_melabel', 'Label.nama_label',
+                'Komentar.id_komentar', 'Komentar.komentar',
+                'Status.id_status', 'Status.teks_status'
+            ],
+            'limit' => 5,
+            'maxLimit' => 100,
+        ];
     }
 }

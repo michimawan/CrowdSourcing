@@ -1,5 +1,9 @@
 <?php
-App::uses('File', 'Utility');
+App::import('Lib', 'SettingManager');
+App::import('Repository', 'KomentarRepository');
+App::import('Repository', 'StatusRepository');
+App::import('Repository', 'LabelRepository');
+App::import('Repository', 'UserRepository');
 
 class StatusesController extends AppController
 {
@@ -12,10 +16,11 @@ class StatusesController extends AppController
     // method for showing all status
     public function index()
     {
-        if($this->Auth->user()['role']=='user')
-            $this->redirect(['controller' => 'users', 'action' => 'user']);
-
         $this->set('title','Daftar Status Facebook');
+
+        $currentUser = $this->Auth->user();
+        if($currentUser['role'] == 'user')
+            $this->redirect(['controller' => 'users', 'action' => 'user']);
 
         $this->Paginator->settings = [
             'limit' => 5,
@@ -24,19 +29,13 @@ class StatusesController extends AppController
             'limit' => 5,
             'maxLimit' => 100,
         ];
-
         $datas = $this->Paginator->paginate('Status');
 
         //lock hanya muncul jika semua data sudah terlabeli
-        $lengkap = $this->Status->Komentar->find('all', [
-                'conditions' => ['Komentar.status' => 'belum'],
-                'recursive' => -1
-            ]
-        );
-
+        $lengkap = (new KomentarRepository())->getUnfinishedLabeledComment();
         if($lengkap);
         else {
-            $lockstate = $this->getLock();
+            $lockstate = $this->settingGetLock();
             $this->set(['lockstate' => $lockstate]);
         }
 
@@ -47,17 +46,14 @@ class StatusesController extends AppController
     // method for showing all a single status and all comment related to it
     public function view($id = null)
     {
-        if($this->Auth->user()['role']=='user')
+        $currentUser = $this->Auth->user();
+        if($currentUser['role']=='user')
             $this->redirect(['controller' => 'users', 'action' => 'user']);
 
         if($id){
             $this->set('title','Status Facebook');
 
-            $status = $this->Status->find('all', [
-                'conditions' => ['Status.id_status' => $id],
-                'recursive' => 0
-            ]);
-            $this->set(['status' => $status]);
+            $status = (new StatusRepository())->getStatusByIdStatus($id);
 
             $this->Paginator->settings = [
                 'conditions' => ['Komentar.id_status' => $id],
@@ -66,78 +62,31 @@ class StatusesController extends AppController
                 'limit' => 5,
                 'maxLimit' => 100,
             ];
-
             $komentars = $this->Paginator->paginate('Komentar');
-            $this->set(['komentars' => $komentars]);
+            $maxlabel = $this->settingGetN();
 
-            $maxlabel = $this->getN();
-            $this->set(['maxlabel' => $maxlabel]);
+            $this->set([
+                'status' => $status,
+                'komentars' => $komentars,
+                'maxlabel' => $maxlabel,
+            ]);
         } else {
             $this->redirect(['action' => 'index']);
         }
     }
 
-    //JSON -------------------------------------------------------
-    public function detail($id)
-    {
-
-        $this->autoRender = false;
-        if($this->request->is('ajax')) {
-            $datas = $this->Status->Komentar->find('all', [
-                'conditions' => ['Komentar.id_komentar' => $id],
-                'contain' => ['Label.id_label', 'Label.username_pelabel', 'Label.nama_label']
-            ]);
-
-            if($datas) {
-                echo json_encode($datas);
-            } else {
-                echo 'no';
-            }
-        } else {
-            $this->redirect(['action'=>'index']);
-        }
-    }
-
-
-    // priviledge: this class
-    // method for getting a random comment to be labelled by user
-    private function randkomentar($id)
-    {
-        //baca maksimum label per komentar
-        $maxlabel = $this->getN();
-        //ambil username user
-        $users = $this->Komentar->Label->User->find('first', [
-            'conditions' => ['User.social_network_id' => $id],
-            'fields' => ['User.email'],
-            'recursive' => -1
-        ]);
-        $users = $users['User']['email'];
-
-        $datas = $this->Komentar->getRandom($users, $maxlabel);
-        return $datas;
-    }
-
     // priviledge: user
     // method for user can labeling a comment or not
-    public function labeling($id = null, $user = null, $id_komen = null, $id_status = null, $label = null)
+    public function labeling($user = null, $id_komen = null, $id_status = null, $label = null)
     {
-        if($this->Auth->user()['role']=='admin')
+        $currentUser = $this->Auth->user();
+        if($currentUser['role']=='admin')
             $this->redirect(['controller' => 'users', 'action' => 'index']);
 
-        //hitung total komentar
-        $komentars = $this->Komentar->find('count');
+        $cannotLabellingAgain = (new LabelRepository())->checkLabellingPermissionForAUser($currentUser['social_network_id']);
 
-        //lihat user sudah melabeli berapa komentar
-        $labelsekarang = $this->Komentar->countUsers($id);
-        //buat permissionnya
-        $tambahlabel = false;
-        if($labelsekarang[0][0]['jumlah'] == $komentars)
-            $tambahlabel = true;
-
-        if($tambahlabel == true)
+        if($cannotLabellingAgain == true)
             $this->redirect(['controller' => 'users', 'action' => 'user']);
-
-        $id = $this->Auth->user()['social_network_id'];
 
         if($this->request->is('post')) {
 
@@ -153,22 +102,20 @@ class StatusesController extends AppController
 
                 $this->Komentar->Label->save($data);
 
-                App::import('Controller', 'Users');
-                $UsersController = new UsersController;
-                $UsersController->incrementLabel($id);
+                (new UserRepository())->incrementLabelForAUser($currentUser['social_network_id']);
 
                 $this->inckomenlabel($id_komen);
                 $this->Session->setFlash('Komentar "$id_komen" berhasil dilabeli', 'customflash', ['class' => 'success']);
             }
-            $this->redirect(['action' => 'labeling', $id]);
-        } else if ($id) {
+            $this->redirect(['action' => 'labeling', $currentUser['social_network_id']]);
+        } else if ($currentUser['social_network_id']) {
             $this->set('title', 'Pelabelan Komentar');
-            $datas = $this->randkomentar($id);
+
+            $datas = (new UserRepository())->getRandomKomentarForAUser($currentUser['social_network_id']);
             if($datas)
                 $this->set(['datas' => $datas]);
             else
-                $this->redirect(['controller' => 'users', 'action' => 'user', $id]);
-            //$log = $this->Status->getDataSource()->getLog(false, false);
+                $this->redirect(['controller' => 'users', 'action' => 'user', $currentUser['social_network_id']]);
         }
     }
 
@@ -180,7 +127,7 @@ class StatusesController extends AppController
             $this->redirect(['controller' => 'users', 'action' => 'index']);
 
         $this->set('title', 'Edit Label Komentar');
-        if($this->getLock() == 'true')
+        if($this->settingGetLock() == 'true')
             $this->redirect(['controller' => 'users', 'action' => 'user']);
 
         if($this->request->is('post')){
@@ -210,66 +157,21 @@ class StatusesController extends AppController
     public function expKomentar()
     {
         $this->layout = null;
-        $datas = $this->Status->Komentar->getKomen();
-        $this->set(['datas' => $datas]);
-
         $this->autoLayout = false;
+
+        $datas = (new KomentarRepository())->getAllComment();
+        $this->set(['datas' => $datas]);
     }
 
     // method for export single status, and all comment that related to it
     public function expStatus($id)
     {
         $this->layout = null;
-        $datas = $this->Status->Komentar->getStatus($id);
-        $this->set(['datas' => $datas]);
-
         $this->autoLayout = false;
-    }
 
-    // method for count the final label that will be given to a comment
-    public function calculate()
-    {
-        $datas = $this->Status->Komentar->find('all');
+        $datas = (new KomentarRepository())->getAllCommentRelatedToStatus($id);
         $this->set(['datas' => $datas]);
-
-        foreach($datas as $data){
-            $value = 0;
-            foreach ($data['Label'] as $label) {
-                if($label['nama_label'] == 'positif')
-                    $value++;
-                else if($label['nama_label'] == 'negatif')
-                    $value--;
-            }
-
-            if($value > 0)
-                $value = 'positif';
-            else if($value == 0)
-                $value = 'netral';
-            else
-                $value = 'negatif';
-
-            $label = ['id_komentar' => $data['Komentar']['id_komentar'], 'label' => $value];
-            $this->Status->Komentar->save($label);
-        }
-        $this->redirect(['controller' => 'users', 'action' => 'index']);
     }
-
-    // method for get total number of labels that have been made by all user
-    public function countlabel()
-    {
-        return $this->Status->Komentar->Label->find(
-            'count', ['fields' => ['Label.id_label']]
-        );
-    }
-
-    // method for count how many comments that exist in db
-    public function countkomentar()
-    {
-        return $this->Status->Komentar->find(
-            'count', ['fields' => ['Komentar.id_komentar']]
-        );
-    }
-
 
     // method for increment number of label that has been given at certain comment.
     // this method also update the status of a comment, if labels count is the same as configuration file
@@ -287,7 +189,7 @@ class StatusesController extends AppController
         ]);
 
         //kalau sudah sama dengan N, update statusnya
-        if($jmllabel['Komentar']['jml_label'] == $this->getN()) {
+        if($jmllabel['Komentar']['jml_label'] == $this->settingGetN()) {
             $data = ['id_komentar' => $id, 'status' => 'lengkap'];
             $this->Status->Komentar->save($data);
         }
@@ -309,22 +211,13 @@ class StatusesController extends AppController
             return false;
     }
 
-    // method for get the max number of label for a comment
-    private function getN()
+    private function settingGetN()
     {
-        $file = new File(WWW_ROOT .  DS .'files'.DS .'setting.txt');
-        $json = $file->read(true, 'r');
-        $json = json_decode($json);
-        return $json->n;
+        return (new SettingManager('setting.txt'))->getN();
     }
 
-    // method for get the current configuration for locking state
-    private function getLock()
+    private function settingGetLock()
     {
-        //baca maksimum label per komentar
-        $file = new File(WWW_ROOT .  DS .'files'.DS .'setting.txt');
-        $json = $file->read(true, 'r');
-        $json = json_decode($json);
-        return $json->lock;
+        return (new SettingManager('setting.txt'))->getLock();
     }
 }

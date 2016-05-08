@@ -1,11 +1,11 @@
 <script type="text/javascript">
 	window.onload = function () {
 		var a = $("#dataPoint").attr('attribute');
-		draw(a);	
+		draw(a);
 	}
 
 	function draw(datas){
-	
+
 		var data = datas.split("-");
 
 		var chart = new CanvasJS.Chart("chart",
@@ -18,16 +18,16 @@
 				verticalAlign: "center",
 				horizontalAlign: "left",
 				fontSize: 20,
-				fontFamily: "Helvetica"        
+				fontFamily: "Helvetica"
 			},
 			theme: "theme2",
 			data: [
-			{        
-				type: "pie",       
-				indexLabelFontFamily: "Helvetica",       
+			{
+				type: "pie",
+				indexLabelFontFamily: "Helvetica",
 				indexLabelFontSize: 20,
 				indexLabel: "{label} {y}%",
-				startAngle:-20,      
+				startAngle:-20,
 				showInLegend: false,
 				toolTipContent:"{legendText} {y}%",
 				dataPoints: [
@@ -40,5 +40,5 @@
 		});
 		chart.render();
 	}
-	
+
 </script>

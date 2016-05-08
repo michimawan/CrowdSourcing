@@ -17,7 +17,7 @@ else if($menu === 'users') {
 }
 else if ($menu === 'statuses') {
 	$statuses= 'class="active"';
-} 
+}
 ?>
 
 
@@ -47,18 +47,18 @@ else if ($menu === 'statuses') {
 			</ul>
 
 			<ul class="nav navbar-nav navbar-right">
-				
+
 				<li id='navbar-login'>
 					<?php if($this->Auth->user()){?>
 					<a href="<?php echo $logouturl; ?>" class='logout'><span>Logout</span></a>
-					<?php } else { 
-						
+					<?php } else {
+
 						echo $this->Html->link(
 							$this->Html->image("login-google.jpg", array("alt" => "Signin with Google")),
 						    array('action'=>'social_login', 'Google'),
 						    array('escape' => false, "class" => "coco")
 						);
-						
+
 						/*
 						echo $this->Html->image("login-google.jpg", array(
 						    "alt" => "Signin with Google",

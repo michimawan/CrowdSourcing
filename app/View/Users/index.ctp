@@ -45,7 +45,7 @@
 		
 	</div>
 	<div class='information col-xs-6'>
-		<h1>Selamat datang, <?php echo $admin[0]['User']['display_name']; ?></h1>
+		<h1>Selamat datang, <?php echo $admin['display_name']; ?></h1>
 		<h3>Data terlabel: <?php echo $sum; ?></h3>
 		<h3>Data belum terlabel: <?php echo $total-$sum; ?></h3>
 		<?php 

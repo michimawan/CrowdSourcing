@@ -36,44 +36,12 @@ class Komentar extends AppModel
         return $this->query($q);
     }
 
-    public function countUsers($iduser)
+    public function countLabelForAUser($iduser)
     {
         $q = "SELECT COUNT(`tabel_labels`.id_label) as jumlah
             FROM `tabel_labels`
             WHERE username_pelabel LIKE
             (SELECT email FROM users WHERE social_network_id = '$iduser')";
-
-        return $this->query($q);
-    }
-
-    public function getMaxJmlLabel()
-    {
-        $q = "SELECT MAX(jml_label) as maxi FROM komentar_statuses";
-
-        return $this->query($q);
-    }
-
-    public function updateStatus($label, $n)
-    {
-        $q = "UPDATE `komentar_statuses` SET `status`='$label' WHERE jml_label = '$n'";
-
-        return $this->query($q);
-    }
-
-    public function getStatus($id)
-    {
-        $q = "SELECT * FROM `statuses` AS `Status`
-            LEFT JOIN `komentar_statuses` AS `Komentar` ON `Komentar`.id_status = `Status`.id_status
-            WHERE `Status`.id_status = '$id'";
-
-        return $this->query($q);
-    }
-
-    public function getKomen()
-    {
-        $q = "SELECT * FROM `komentar_statuses` AS `Komentar`
-            LEFT JOIN `statuses` AS `Status` ON `Komentar`.id_status = `Status`.id_status
-            ORDER BY `Komentar`.id_status";
 
         return $this->query($q);
     }

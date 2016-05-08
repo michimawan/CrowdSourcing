@@ -1,5 +1,3 @@
-
-	<div class="container">
-		<p>&copy2015 oleh TI UKDW</p>
-		
-	</div>
+<div class="container">
+    <p>&copy2015 oleh TI UKDW</p>
+</div>

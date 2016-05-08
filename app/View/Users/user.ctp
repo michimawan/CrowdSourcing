@@ -1,20 +1,20 @@
 <div class='profile'>
 	<div class='img left col-xs-4'>
-		<img src="<?php echo $this->Auth->user()['picture']?>" class='img-rounded img-responsive'>
+		<img src="<?php echo $currentUser['picture']?>" class='img-rounded img-responsive'>
 		
 	</div>
 	<div class='information left col-xs-6'>
-		<h1>Selamat datang, <?php echo $this->Auth->user()['display_name']; ?></h1>
-		<h3>Total Labeling: <?php echo $users[0]['User']['total_label'];?></h3>
+		<h1>Selamat datang, <?php echo $currentUser['display_name']; ?></h1>
+		<h3>Total Labeling: <?php echo $currentUser['total_label'];?></h3>
 		<?php
 
-		if($tambahlabel == true)
+		if($cannotLabellingAgain == true)
 			echo "<h4>Anda sudah melabeli semua komentar yang disediakan !</h4>";
-		else if($canlabel == false)
+		else if($isExistCommentWithLabel == false)
 			echo "<h4>Tidak ada komentar yang bisa dilabeli lagi !</h4>";
 		else 
 			echo $this->Html->link('beri label',
-				array('controller' => 'Statuses', 'action'=>'labeling', $this->Auth->user()['social_network_id']),
+				array('controller' => 'Statuses', 'action'=>'labeling', $currentUser['social_network_id']),
 				array('class' => 'btn btn-primary')
 			);
 		?>
@@ -46,7 +46,7 @@
 			?>
 			<tr>
 				<td><?php echo $i; ?></td>
-				<td><?php echo $labels['Komentar']['Status']['teks_status']; ?></td>
+				<td><?php echo $labels['Status']['teks_status']; ?></td>
 				<td><?php echo $labels['Komentar']['komentar']; ?></td>
 				<td><?php echo $labels['Label']['waktu_melabel']; ?></td>
 				<td><?php echo $labels['Label']['nama_label'] ?></td>

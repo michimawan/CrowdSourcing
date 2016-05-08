@@ -10,9 +10,8 @@ $('li').click(function(){
 		$('.panel.panel-default:visible').slideToggle();
 		$('#'+data).slideToggle();
 	}
-	
-});
 
-<?php	
+});
+<?php
 }
 ?>

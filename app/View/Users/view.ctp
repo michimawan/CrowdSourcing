@@ -49,7 +49,7 @@
 			?>
 			<tr>
 				<td><?php echo $i; ?></td>
-				<td><?php echo $labels['Komentar']['Status']['teks_status']; ?></td>
+				<td><?php echo $labels['Status']['teks_status']; ?></td>
 				<td><?php echo $labels['Komentar']['komentar']; ?></td>
 				<td><?php echo $labels['Label']['waktu_melabel']; ?></td>
 				<td><?php echo $labels['Label']['nama_label'] ?></td>
