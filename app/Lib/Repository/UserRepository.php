@@ -42,6 +42,6 @@ class UserRepository
         ]);
         $userEmail = $users['User']['email'];
 
-        return $komentarRepository->getModel()->getRandom($userEmail, $maxlabel);
+        return $komentarRepository->getModel()->getRandom($userEmail, $maxLabel);
     }
 }
