@@ -4,13 +4,27 @@ App::import('Lib', 'FileManager');
 
 class SettingManager extends FileManager
 {
-    public function __construct($filename)
+    private static $settingObject;
+
+    protected function __construct($filename)
     {
         parent::__construct($filename);
 
         $this->file = new File($this->filePath);
         $this->readFile();
     }
+
+    public static function getSettingObject($filename)
+    {
+        if (static::$settingObject == null) {
+            static::$settingObject = new SettingManager($filename);
+        }
+
+        return static::$settingObject;
+    }
+
+    private function __clone() {}
+    private function __wakeup() {}
 
     public function getData()
     {

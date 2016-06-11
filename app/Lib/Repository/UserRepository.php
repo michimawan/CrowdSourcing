@@ -32,7 +32,8 @@ class UserRepository
         $komentarRepository = new KomentarRepository();
 
         //baca maksimum label per komentar
-        $maxLabel = (new SettingManager('setting.txt'))->getN();
+        $settingObject = SettingManager::getSettingObject('setting.txt');
+        $maxLabel = $settingObject->getN();
 
         //ambil username user
         $this->userModel->unbindModel(['hasMany' => ['Label']]);

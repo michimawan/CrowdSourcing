@@ -213,11 +213,13 @@ class StatusesController extends AppController
 
     private function settingGetN()
     {
-        return (new SettingManager('setting.txt'))->getN();
+        $settingObject = SettingManager::getSettingObject('setting.txt');
+        return $settingObject->getN();
     }
 
     private function settingGetLock()
     {
-        return (new SettingManager('setting.txt'))->getLock();
+        $settingObject = SettingManager::getSettingObject('setting.txt');
+        return $settingObject->getLock();
     }
 }

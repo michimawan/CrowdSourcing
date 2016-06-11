@@ -77,24 +77,28 @@ class UsersController extends AppController
 
     private function settingGetData()
     {
-        return (new SettingManager('setting.txt'))->getData();
+        $settingObject = SettingManager::getSettingObject('setting.txt');
+        return $settingObject->getData();
     }
 
     private function settingGetN()
     {
-        return (new SettingManager('setting.txt'))->getN();
+        $settingObject = SettingManager::getSettingObject('setting.txt');
+        return $settingObject->getN();
     }
 
     private function settingGetLock()
     {
-        return (new SettingManager('setting.txt'))->getLock();
+        $settingObject = SettingManager::getSettingObject('setting.txt');
+        return $settingObject->getLock();
     }
 
     // method for set lock state
     public function setLock($value)
     {
         $data['lock'] = $value;
-        (new SettingManager('setting.txt'))->setLock($data);
+        $settingObject = SettingManager::getSettingObject('setting.txt');
+        return $settingObject->setLock($data);
 
         //saat di lock, maka update label akhir sebuah komentar
         if($value == 'true')
@@ -220,7 +224,8 @@ class UsersController extends AppController
                 $datas['n'] = $maxLabelCount[0][0]['maxLabelCount'];
             }
 
-            (new SettingManager('setting.txt'))->setData($datas);
+            $settingObject = SettingManager::getSettingObject('setting.txt');
+            $settingObject->setData($datas);
             $this->redirect(['action'=>'index']);
         }
     }
